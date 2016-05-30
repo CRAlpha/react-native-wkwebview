@@ -163,7 +163,6 @@ var WKWebView = React.createClass({
     bounces: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
-    bounces: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     scalesPageToFit: PropTypes.bool,
