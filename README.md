@@ -2,6 +2,21 @@
 
 React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. **Deployment Target >= iOS 8.0 is required**
 
+### Install
+
+1. You have to install from this repo: `npm install https://github.com/CRAlpha/react-native-wkwebview`
+2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
+3. Go to node_modules ➜ react-native-wkwebview ➜ ios ➜ select RCTWKWebView folder and create a group
+4. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
+
+### Usage
+
+```
+  import WKWebView from 'react-native-wkwebview';
+```
+
+Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
+
 ### Compatibility with UIWebView
 
 WKWebView aims to be a drop in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
@@ -37,3 +52,7 @@ Unsupported props are:
 - decelerationRate
 
 If you look at the source, the JavaScript side is mostly derived from React Native's WebView. The Objective C side mostly deals with the API difference between UIWebView and WKWebView.
+
+### Contribute
+
+We battle test this component against our app. However, we haven't use all the props so if something does not work as expected, please open a issue or PR.
