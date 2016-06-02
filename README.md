@@ -21,7 +21,7 @@ Try replacing your existing `WebView` with `WKWebView` and it should work in mos
 
 WKWebView aims to be a drop in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
 
-Additional props:
+**Additional props:**
 
 - onProgress
 
@@ -33,7 +33,7 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 
 `progress` is a double between 0 and 1.
 
-Currently supported props are:
+**Currently supported props are:**
 
 - automaticallyAdjustContentInsets
 - contentInset
@@ -54,7 +54,7 @@ Currently supported props are:
 - onShouldStartLoadWithRequest
 - scrollEnabled
 
-Unsupported props are:
+**Unsupported props are:**
 
 - mediaPlaybackRequiresUserAction NO
 - scalesPageToFit
