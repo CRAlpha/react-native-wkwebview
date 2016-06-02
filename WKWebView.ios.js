@@ -158,6 +158,10 @@ var WKWebView = React.createClass({
      */
     onError: PropTypes.func,
     /**
+     * Report the progress
+     */
+    onProgress: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -249,6 +253,7 @@ var WKWebView = React.createClass({
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        onProgress={this._onProgress}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       />;
 
@@ -338,6 +343,11 @@ var WKWebView = React.createClass({
     });
     this._updateNavigationState(event);
   },
+
+  _onProgress(event: Event) {
+    var onProgress = this.props.onProgress;
+    onProgress && onProgress(event.nativeEvent.progress);
+  }
 });
 
 var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {

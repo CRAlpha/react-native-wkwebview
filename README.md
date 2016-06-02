@@ -12,7 +12,7 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 ### Usage
 
 ```
-  import WKWebView from 'react-native-wkwebview';
+import WKWebView from 'react-native-wkwebview';
 ```
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
@@ -20,6 +20,18 @@ Try replacing your existing `WebView` with `WKWebView` and it should work in mos
 ### Compatibility with UIWebView
 
 WKWebView aims to be a drop in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
+
+Additional props:
+
+- onProgress
+
+A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
+
+```
+<WKWebView onProgress={(progress) => console.log(progress)} />
+```
+
+`progress` is a double between 0 and 1.
 
 Currently supported props are:
 

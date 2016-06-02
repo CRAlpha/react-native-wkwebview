@@ -17,6 +17,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
+@property (nonatomic, copy) RCTDirectEventBlock onProgress;
 
 @end
 
@@ -34,6 +35,7 @@
     _contentInset = UIEdgeInsetsZero;
     _webView = [[WKWebView alloc] initWithFrame:self.bounds];
     _webView.navigationDelegate = self;
+    [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
   return self;
@@ -139,6 +141,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_webView.scrollView
                       updateOffset:YES];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  if ([keyPath isEqualToString:@"estimatedProgress"]) {
+    if (!_onProgress) {
+      return;
+    }
+    _onProgress(@{@"progress": [change objectForKey:NSKeyValueChangeNewKey]});
+  }
+}
+
+- (void)dealloc
+{
+  @try {
+    [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
+  }
+  @catch (NSException * __unused exception) {}
 }
 
 #pragma mark - WKNavigationDelegate methods
