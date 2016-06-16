@@ -14,8 +14,8 @@ import ReactNative, {
 } from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
-import invariant from 'react-native/node_modules/fbjs/lib/invariant';
-import keyMirror from 'react-native/node_modules/fbjs/lib/keyMirror';
+import invariant from 'fbjs/lib/invariant';
+import keyMirror from 'fbjs/lib/keyMirror';
 var WKWebViewManager = NativeModules.WKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
