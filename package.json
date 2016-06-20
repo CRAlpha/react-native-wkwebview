@@ -29,6 +29,9 @@
   "pre-push#master": [
     "lint"
   ],
+  "dependencies": {
+    "fbjs": "0.8.3"
+  },
   "peerDependencies": {
     "react-native": "*"
   }
