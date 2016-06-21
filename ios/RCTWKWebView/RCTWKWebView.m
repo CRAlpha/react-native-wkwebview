@@ -1,6 +1,5 @@
 #import "RCTWKWebView.h"
 
-#import <WebKit/WebKit.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTAutoInsetsProtocol.h"
@@ -10,6 +9,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "MessageHandlerOpenScheme.h"
 
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol>
 
@@ -40,7 +40,22 @@
   }
   return self;
 }
-
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    WKUserContentController * userContentController = [[WKUserContentController alloc] init];
+    WKWebViewConfiguration * configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.userContentController = userContentController;
+    
+    //MessageHandler trustlyOpenURLScheme
+    MessageHandlerOpenScheme * messageHandlerOpenScheme = [[MessageHandlerOpenScheme alloc] init];
+    messageHandlerOpenScheme.parent = self;
+    [userContentController addScriptMessageHandler:messageHandlerOpenScheme name:@"trustlyOpenURLScheme"];
+    
+    // Use configuration when creating WKWebView and attach it to your view
+    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    self.view = self.webView;
+}
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)goForward

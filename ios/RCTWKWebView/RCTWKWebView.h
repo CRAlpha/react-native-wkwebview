@@ -1,3 +1,4 @@
+#import <WebKit/WebKit.h>
 #import "RCTView.h"
 
 @class RCTWKWebView;
@@ -26,6 +27,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+
+@property WKWebView * webView;
 
 - (void)goForward;
 - (void)goBack;
