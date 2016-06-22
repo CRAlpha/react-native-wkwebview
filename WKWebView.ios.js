@@ -10,7 +10,8 @@ import ReactNative, {
   UIManager,
   View,
   NativeModules,
-  Text
+  Text,
+  ActivityIndicatorIOS
 } from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
