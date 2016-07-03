@@ -258,8 +258,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   // In order to support window.open
   if (!navigationAction.targetFrame.isMainFrame) {
+    NSURL* url = navigationAction.request.URL;
     UIApplication *app = [UIApplication sharedApplication];
-    [app openURL:navigationAction.request.URL];
+
+    if ([app canOpenURL:url]) {
+      [app openURL:url];
+    }
   }
 
   return nil;
