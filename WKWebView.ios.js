@@ -182,6 +182,11 @@ var WKWebView = React.createClass({
      * @platform ios
      */
     onShouldStartLoadWithRequest: PropTypes.func,
+    /**
+     * Copies cookies from sharedHTTPCookieStorage when calling loadRequest.
+     * Set this to true to emulate behavior of WebView component
+     */
+    sendCookies: PropTypes.bool,
   },
   getInitialState() {
     return {
@@ -250,6 +255,7 @@ var WKWebView = React.createClass({
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        sendCookies={this.props.sendCookies}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}

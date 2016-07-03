@@ -43,6 +43,19 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+- (void)loadRequest:(NSURLRequest *)request {
+  if (request.URL && _sendCookies) {
+    NSDictionary *cookies = [NSHTTPCookie requestHeaderFieldsWithCookies:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:request.URL]];
+    if ([cookies objectForKey:@"Cookie"]) {
+      NSMutableURLRequest *mutableRequest = request.mutableCopy;
+      [mutableRequest addValue:cookies[@"Cookie"] forHTTPHeaderField:@"Cookie"];
+      request = mutableRequest;
+    }
+  }
+
+  [_webView loadRequest:request];
+}
+
 - (void)goForward
 {
   [_webView goForward];
@@ -57,7 +70,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
   if (request.URL && !_webView.URL.absoluteString.length) {
-    [_webView loadRequest:request];
+    [self loadRequest:request];
   }
   else {
     [_webView reload];
@@ -93,7 +106,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [_webView loadHTMLString:@"" baseURL:nil];
       return;
     }
-    [_webView loadRequest:request];
+    [self loadRequest:request];
   }
 }
 
