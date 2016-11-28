@@ -70,6 +70,12 @@ Then your React Native should have
 {name: 'reactNative', body: {data: 'hello!'}}
 ```
 
+The data serialization flow is as follows:
+
+JS --- (via WKWebView) --> ObjC --- (via React Native Bridge) ---> JS
+
+So I recommend to keep your data simple and JSON-friendly.
+
 **Currently supported props are:**
 
 - automaticallyAdjustContentInsets
