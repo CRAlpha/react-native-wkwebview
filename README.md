@@ -4,10 +4,23 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 ### Install
 
+**Alternative #1**
+
 1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
 3. Go to node_modules ➜ react-native-wkwebview ➜ ios ➜ select RCTWKWebView folder and create a group
 4. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
+
+**Alternative #2**
+
+1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
+2. run `rnpm link`
+
+**Notes to iOS 8:**
+
+If you install from using Alterntive #1, you might encounter bugs in iOS 8.2 (We've only tested this version) where the app crashes with `dyld_fatal_error`.
+This can be solved using Alternative #2. We were still unable to find the cause of the first bug so I recommend that you link the library using Alternative #1
+
 
 ### Usage
 
