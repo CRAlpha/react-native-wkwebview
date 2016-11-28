@@ -163,6 +163,10 @@ var WKWebView = React.createClass({
      */
     onProgress: PropTypes.func,
     /**
+     * Receive message from webpage
+     */
+    onMessage: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -261,6 +265,7 @@ var WKWebView = React.createClass({
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
         onProgress={this._onProgress}
+        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       />;
 
@@ -354,6 +359,11 @@ var WKWebView = React.createClass({
   _onProgress(event: Event) {
     var onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
+  },
+
+  _onMessage(event: Event) {
+    var onMessage = this.props.onMessage;
+    onMessage && onMessage(event.nativeEvent);
   }
 });
 
