@@ -11,7 +11,7 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-@interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol>
+@interface RCTWKWebView () <WKNavigationDelegate, WKUIDelegate, RCTAutoInsetsProtocol>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
@@ -35,6 +35,7 @@
     _contentInset = UIEdgeInsetsZero;
     _webView = [[WKWebView alloc] initWithFrame:self.bounds];
     _webView.navigationDelegate = self;
+    _webView.UIDelegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
@@ -217,15 +218,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (isJSNavigation) {
     decisionHandler(WKNavigationActionPolicyCancel);
   }
-  else if (navigationAction.targetFrame && ([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"])) {
-    decisionHandler(WKNavigationActionPolicyAllow);
-  }
   else {
-    if (![scheme isEqualToString:@"about"]) {
-        [[UIApplication sharedApplication] openURL:url];
-    }
     decisionHandler(WKNavigationActionPolicyAllow);
   }
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+  if (!navigationAction.targetFrame.isMainFrame) {
+    [webView loadRequest:navigationAction.request];
+  }
+  return nil;
 }
 
 - (void)webView:(__unused WKWebView *)webView didFailProvisionalNavigation:(__unused WKNavigation *)navigation withError:(NSError *)error
