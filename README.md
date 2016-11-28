@@ -50,6 +50,26 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component.
 
+- onMessage
+
+This utilizes the message handlers in WKWebView and allows you to post message from webview to React Native. For example:
+
+```
+<WKWebView onMessage={(e) => console.log(e)} />
+```
+
+Then in your webview, you can post message to React Native using
+
+```
+window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
+```
+
+Then your React Native should have 
+
+```
+{name: 'reactNative', body: {data: 'hello!'}}
+```
+
 **Currently supported props are:**
 
 - automaticallyAdjustContentInsets
