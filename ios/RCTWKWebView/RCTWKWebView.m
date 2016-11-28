@@ -11,7 +11,7 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-@interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol>
+@interface RCTWKWebView () <WKNavigationDelegate, WKUIDelegate, RCTAutoInsetsProtocol>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
@@ -35,6 +35,7 @@
     _contentInset = UIEdgeInsetsZero;
     _webView = [[WKWebView alloc] initWithFrame:self.bounds];
     _webView.navigationDelegate = self;
+    _webView.UIDelegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
@@ -263,5 +264,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _onLoadingFinish([self baseEvent]);
   }
 }
+
+#pragma mark - WKUIDelegate methods
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+  // In order to support window.open
+  if (!navigationAction.targetFrame.isMainFrame) {
+    NSURL* url = navigationAction.request.URL;
+    UIApplication *app = [UIApplication sharedApplication];
+
+    if ([app canOpenURL:url]) {
+      [app openURL:url];
+    }
+  }
+
+  return nil;
+}
+
 
 @end
