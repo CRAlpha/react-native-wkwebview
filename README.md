@@ -4,7 +4,7 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 ### Install
 
-1. You have to install from this repo: `npm install https://github.com/CRAlpha/react-native-wkwebview`
+1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
 3. Go to node_modules ➜ react-native-wkwebview ➜ ios ➜ select RCTWKWebView folder and create a group
 4. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
