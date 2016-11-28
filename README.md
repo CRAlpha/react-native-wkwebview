@@ -18,8 +18,8 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 **Notes to iOS 8:**
 
-If you install from using Alterntive #1, you might encounter bugs in iOS 8.2 (We've only tested this version) where the app crashes with `dyld_fatal_error`.
-This can be solved using Alternative #2. We were still unable to find the cause of the first bug so I recommend that you link the library using Alternative #1
+If you install from using Alterntive #2, you might encounter bugs in iOS 8.2 (We've only tested this version) where the app crashes with `dyld_fatal_error`.
+This can be solved using Alternative #1. We were still unable to find the cause of the first bug so I recommend that you link the library using Alternative #1.
 
 
 ### Usage
