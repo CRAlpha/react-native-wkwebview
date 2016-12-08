@@ -13,17 +13,17 @@
 
 @implementation RCTWKWebViewManager
 {
-    NSConditionLock *_shouldStartLoadLock;
-    BOOL _shouldStartLoad;
+  NSConditionLock *_shouldStartLoadLock;
+  BOOL _shouldStartLoad;
 }
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-    RCTWKWebView *webView = [RCTWKWebView new];
-    webView.delegate = self;
-    return webView;
+  RCTWKWebView *webView = [RCTWKWebView new];
+  webView.delegate = self;
+  return webView;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
@@ -42,38 +42,38 @@ RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
-        RCTWKWebView *view = viewRegistry[reactTag];
-        if (![view isKindOfClass:[RCTWKWebView class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
-        } else {
-            [view goBack];
-        }
-    }];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
+    } else {
+      [view goBack];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 {
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
-        RCTWKWebView *view = viewRegistry[reactTag];
-        if (![view isKindOfClass:[RCTWKWebView class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
-        } else {
-            [view goForward];
-        }
-    }];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
+    } else {
+      [view goForward];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
-        RCTWKWebView *view = viewRegistry[reactTag];
-        if (![view isKindOfClass:[RCTWKWebView class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
-        } else {
-            [view reload];
-        }
-    }];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
+    } else {
+      [view reload];
+    }
+  }];
 }
 
 #pragma mark - Exported synchronous methods
@@ -82,32 +82,32 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
    withCallback:(RCTDirectEventBlock)callback
 {
-    _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
-    _shouldStartLoad = YES;
-    request[@"lockIdentifier"] = @(_shouldStartLoadLock.condition);
-    callback(request);
-    
-    // Block the main thread for a maximum of 250ms until the JS thread returns
-    if ([_shouldStartLoadLock lockWhenCondition:0 beforeDate:[NSDate dateWithTimeIntervalSinceNow:.25]]) {
-        BOOL returnValue = _shouldStartLoad;
-        [_shouldStartLoadLock unlock];
-        _shouldStartLoadLock = nil;
-        return returnValue;
-    } else {
-        RCTLogWarn(@"Did not receive response to shouldStartLoad in time, defaulting to YES");
-        return YES;
-    }
+  _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
+  _shouldStartLoad = YES;
+  request[@"lockIdentifier"] = @(_shouldStartLoadLock.condition);
+  callback(request);
+  
+  // Block the main thread for a maximum of 250ms until the JS thread returns
+  if ([_shouldStartLoadLock lockWhenCondition:0 beforeDate:[NSDate dateWithTimeIntervalSinceNow:.25]]) {
+    BOOL returnValue = _shouldStartLoad;
+    [_shouldStartLoadLock unlock];
+    _shouldStartLoadLock = nil;
+    return returnValue;
+  } else {
+    RCTLogWarn(@"Did not receive response to shouldStartLoad in time, defaulting to YES");
+    return YES;
+  }
 }
 
 RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)lockIdentifier)
 {
-    if ([_shouldStartLoadLock tryLockWhenCondition:lockIdentifier]) {
-        _shouldStartLoad = result;
-        [_shouldStartLoadLock unlockWithCondition:0];
-    } else {
-        RCTLogWarn(@"startLoadWithResult invoked with invalid lockIdentifier: "
-                   "got %zd, expected %zd", lockIdentifier, _shouldStartLoadLock.condition);
-    }
+  if ([_shouldStartLoadLock tryLockWhenCondition:lockIdentifier]) {
+    _shouldStartLoad = result;
+    [_shouldStartLoadLock unlockWithCondition:0];
+  } else {
+    RCTLogWarn(@"startLoadWithResult invoked with invalid lockIdentifier: "
+               "got %zd, expected %zd", lockIdentifier, _shouldStartLoadLock.condition);
+  }
 }
 
 @end
