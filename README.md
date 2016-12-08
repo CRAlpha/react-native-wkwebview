@@ -1,5 +1,7 @@
 ## WKWebView Component for React Native
 
+[![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
+
 React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. **Deployment Target >= iOS 8.0 is required**
 
 ### Install
@@ -99,7 +101,7 @@ So I recommend to keep your data simple and JSON-friendly.
 
 **Unsupported props are:**
 
-- mediaPlaybackRequiresUserAction NO
+- mediaPlaybackRequiresUserAction
 - scalesPageToFit
 - domStorageEnabled
 - javaScriptEnabled
