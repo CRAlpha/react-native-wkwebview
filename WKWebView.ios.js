@@ -310,6 +310,10 @@ var WKWebView = React.createClass({
     );
   },
 
+  evaluateJavaScript: function(js) {
+    return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
+  },
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward

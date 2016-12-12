@@ -1,6 +1,7 @@
 #import "RCTWKWebViewManager.h"
 
 #import "RCTBridge.h"
+#import "RCTUtils.h"
 #import "RCTUIManager.h"
 #import "RCTWKWebView.h"
 #import "UIView+React.h"
@@ -72,6 +73,27 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
       RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
     } else {
       [view reload];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(evaluateJavaScript:(nonnull NSNumber *)reactTag
+                  js:(NSString *)js
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
+    } else {
+      [view evaluateJavaScript:js completionHandler:^(id result, NSError *error) {
+        if (error) {
+          reject(@"js_error", @"Error occurred while evaluating Javascript", error);
+        } else {
+          resolve(result);
+        }
+      }];
     }
   }];
 }

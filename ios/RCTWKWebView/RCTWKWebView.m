@@ -78,6 +78,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView goForward];
 }
 
+- (void)evaluateJavaScript:(NSString *)javaScriptString
+         completionHandler:(void (^)(id, NSError *error))completionHandler
+{
+  [_webView evaluateJavaScript:javaScriptString completionHandler:completionHandler];
+}
+
 - (void)goBack
 {
   [_webView goBack];

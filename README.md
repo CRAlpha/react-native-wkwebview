@@ -34,7 +34,7 @@ Try replacing your existing `WebView` with `WKWebView` and it should work in mos
 
 ### Compatibility with UIWebView
 
-WKWebView aims to be a drop in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
+WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
 
 **Additional props:**
 
@@ -51,6 +51,8 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 - sendCookies
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component.
+
+**From WKWebview -> React Native**
 
 - onMessage
 
@@ -77,6 +79,13 @@ The data serialization flow is as follows:
 JS --- (via WKWebView) --> ObjC --- (via React Native Bridge) ---> JS
 
 So I recommend to keep your data simple and JSON-friendly.
+
+**From React Native -> WkWebView**
+
+There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. I recommend to put the code in onLoadEnd callback to make sure
+it does not mess up the DOM.
+
+`<WKWebView ref="webview" onLoadEnd={() => { this.refs.webview.evaluateJavaScript('document.title').then(console.log) }} />`
 
 **Currently supported props are:**
 
