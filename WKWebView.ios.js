@@ -310,6 +310,17 @@ var WKWebView = React.createClass({
     );
   },
 
+  /**
+   * Stop loading the current page.
+   */
+  stopLoading: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWKWebView.Commands.stopLoading,
+      null
+    )
+  },
+
   evaluateJavaScript: function(js) {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   },
