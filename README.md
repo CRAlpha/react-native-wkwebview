@@ -85,7 +85,9 @@ So I recommend to keep your data simple and JSON-friendly.
 There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. I recommend to put the code in onLoadEnd callback to make sure
 it does not mess up the DOM.
 
-`<WKWebView ref="webview" onLoadEnd={() => { this.refs.webview.evaluateJavaScript('document.title').then(console.log) }} />`
+```
+<WKWebView ref="webview" onLoadEnd={() => { this.refs.webview.evaluateJavaScript('document.title').then(console.log) }} />
+```
 
 **Currently supported props are:**
 
