@@ -123,4 +123,4 @@ If you look at the source, the JavaScript side is mostly derived from React Nati
 
 ### Contribute
 
-We battle test this component against our app. However, we haven't use all the props so if something does not work as expected, please open a issue or PR.
+We battle test this component against our app. However, we haven't use all the props so if something does not work as expected, please open an issue or PR.
