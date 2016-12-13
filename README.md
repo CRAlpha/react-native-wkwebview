@@ -82,11 +82,21 @@ So I recommend to keep your data simple and JSON-friendly.
 
 **From React Native -> WkWebView**
 
-There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. I recommend to put the code in onLoadEnd callback to make sure
-it does not mess up the DOM.
+There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView, 
+you can define a callback method on your WebView:
 
 ```
-<WKWebView ref="webview" onLoadEnd={() => { this.refs.webview.evaluateJavaScript('document.title').then(console.log) }} />
+window.receivedMessageFromReactNative = function(data) {
+  // Code here
+  console.log(data);
+}
+```
+
+Then you can send message from React Native with this method call:
+
+```
+// <WKWebView ref="webview" />
+this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from the other side.")');
 ```
 
 **Currently supported props are:**
