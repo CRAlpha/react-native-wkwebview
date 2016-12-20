@@ -48,6 +48,11 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 
 `progress` is a double between 0 and 1.
 
+- openNewWindowInWebView
+
+If set to true, links with `target="_blank"` or `window.open` will be opened in the current webview, not in Safari.
+Default is false.
+
 - sendCookies
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component.
