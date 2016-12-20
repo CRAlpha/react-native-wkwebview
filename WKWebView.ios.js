@@ -189,9 +189,14 @@ var WKWebView = React.createClass({
     onShouldStartLoadWithRequest: PropTypes.func,
     /**
      * Copies cookies from sharedHTTPCookieStorage when calling loadRequest.
-     * Set this to true to emulate behavior of WebView component
+     * Set this to true to emulate behavior of WebView component.
      */
     sendCookies: PropTypes.bool,
+    /**
+     * If set to true, target="_blank" or window.open will be opened in WebView, instead
+     * of new window. Default is false to be backward compatible.
+     */
+    openNewWindowInWebView: PropTypes.bool,
   },
   getInitialState() {
     return {
@@ -261,6 +266,7 @@ var WKWebView = React.createClass({
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         sendCookies={this.props.sendCookies}
+        openNewWindowInWebView={this.props.openNewWindowInWebView}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}

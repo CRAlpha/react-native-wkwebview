@@ -245,13 +245,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (isJSNavigation) {
     decisionHandler(WKNavigationActionPolicyCancel);
   }
-  else if (navigationAction.targetFrame && ([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"])) {
-    decisionHandler(WKNavigationActionPolicyAllow);
-  }
   else {
-    if (![scheme isEqualToString:@"about"]) {
-      [[UIApplication sharedApplication] openURL:url];
-    }
     decisionHandler(WKNavigationActionPolicyAllow);
   }
 }
@@ -335,6 +329,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }]];
   UIViewController *presentingController = RCTPresentedViewController();
   [presentingController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+  NSString *scheme = navigationAction.request.URL.scheme;
+  if ((navigationAction.targetFrame.isMainFrame || _openNewWindowInWebView) && ([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"])) {
+    [webView loadRequest:navigationAction.request];
+  } else {
+    UIApplication *app = [UIApplication sharedApplication];
+    NSURL *url = navigationAction.request.URL;
+    if ([app canOpenURL:url]) {
+      [app openURL:url];
+    }
+  }
+  return nil;
 }
 
 @end
