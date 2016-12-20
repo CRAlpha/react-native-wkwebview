@@ -48,7 +48,7 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 
 `progress` is a double between 0 and 1.
 
-- openNewWindowInWebView
+- openNewWindowInWebView (New in 0.4.0)
 
 If set to true, links with `target="_blank"` or `window.open` will be opened in the current webview, not in Safari.
 Default is false.
@@ -57,7 +57,7 @@ Default is false.
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component.
 
-**From WKWebview -> React Native**
+**From WKWebview -> React Native (New in 0.3.0)**
 
 - onMessage
 
@@ -85,7 +85,7 @@ JS --- (via WKWebView) --> ObjC --- (via React Native Bridge) ---> JS
 
 So I recommend to keep your data simple and JSON-friendly.
 
-**From React Native -> WkWebView**
+**From React Native -> WkWebView (New in 0.3.0)**
 
 There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView, 
 you can define a callback method on your WebView:
