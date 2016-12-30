@@ -110,6 +110,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
     
+    // Permit loading local files:
+    //    import RNFS from 'react-native-fs';
+    //    <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
+    NSString *file = [RCTConvert NSString:source[@"file"]];
+    NSString *allowingReadAccessToURL = [RCTConvert NSString:source[@"allowingReadAccessToURL"]];
+    
+    if (file) {
+      NSURL *fileURL = [RCTConvert NSURL:file];
+      NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
+      [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
+      return;
+    }
+    
     // Check for a static html source first
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {
