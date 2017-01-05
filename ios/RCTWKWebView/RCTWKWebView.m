@@ -9,7 +9,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/RCTView.h>
-#import <UIView+React.h>
+#import <React/UIView+React.h>
 
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate>
 
