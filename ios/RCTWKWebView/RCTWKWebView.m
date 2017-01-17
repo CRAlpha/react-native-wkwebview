@@ -110,6 +110,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
     
+    // Allow loading local files:
+    // <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
+    // Only works for iOS 9+. So iOS 8 will simply ignore those two values
+    NSString *file = [RCTConvert NSString:source[@"file"]];
+    NSString *allowingReadAccessToURL = [RCTConvert NSString:source[@"allowingReadAccessToURL"]];
+    
+    if (file && [_webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
+      NSURL *fileURL = [RCTConvert NSURL:file];
+      NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
+      [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
+      return;
+    }
+    
     // Check for a static html source first
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {

@@ -27,7 +27,7 @@ This can be solved using Alternative #1. We were still unable to find the cause 
 ### Usage
 
 ```
-import WKWebView from 'react-native-wkwebview';
+import WKWebView from 'react-native-wkwebview-reborn';
 ```
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
@@ -56,6 +56,15 @@ Default is false.
 - sendCookies
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component.
+
+- source={{file: '', allowingReadAccessToURL: '' }}
+
+This allows WKWebView loads a local HTML file. Please note the underlying API is only introduced in iOS 9+. So in iOS 8, it will simple ignores these two properties.
+It allows you to provide a fallback URL for iOS 8 users.
+
+```
+<WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
+```
 
 **From WKWebview -> React Native (New in 0.3.0)**
 
