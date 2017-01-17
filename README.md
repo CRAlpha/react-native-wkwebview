@@ -36,7 +36,7 @@ Try replacing your existing `WebView` with `WKWebView` and it should work in mos
 
 React Native 0.40 breaks library compatibility, so we currently have two branches:
 
-- 0.X.X: For RN < 0.40
+- 0.X.X: for RN < 0.40
 - 1.X.X: for RN >= 0.40
 
 Please choose accordingly. We will try to make sure both branches have the same set of features until most people have upraded to 0.40
