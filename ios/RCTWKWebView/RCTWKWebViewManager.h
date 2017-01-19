@@ -1,4 +1,4 @@
-#import <React/RCTViewManager.h>
+#import "RCTViewManager.h"
 
 @interface RCTWKWebViewManager : RCTViewManager
 

@@ -1,4 +1,4 @@
-#import <React/RCTView.h>
+#import "RCTView.h"
 
 @class RCTWKWebView;
 
