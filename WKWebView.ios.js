@@ -171,6 +171,7 @@ var WKWebView = React.createClass({
      */
     bounces: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
+    allowsBackForwardNavigationGestures: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
@@ -264,6 +265,7 @@ var WKWebView = React.createClass({
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
+        allowsBackForwardNavigationGestures={this.props.allowsBackForwardNavigationGestures}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         sendCookies={this.props.sendCookies}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
