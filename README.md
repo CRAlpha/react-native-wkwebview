@@ -124,6 +124,7 @@ this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from
 
 **Currently supported props are:**
 
+- allowsBackForwardNavigationGestures
 - automaticallyAdjustContentInsets
 - contentInset
 - html (deprecated)
