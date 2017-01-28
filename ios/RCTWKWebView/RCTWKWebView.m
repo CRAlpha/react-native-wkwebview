@@ -243,11 +243,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     navigationTypes = @{
-      @(WKNavigationTypeLinkActivated): @"linkactivated",
-      @(WKNavigationTypeFormSubmitted): @"formsubmitted",
+      @(WKNavigationTypeLinkActivated): @"linkactivate",
+      @(WKNavigationTypeFormSubmitted): @"formsubmit",
       @(WKNavigationTypeBackForward): @"backforward",
       @(WKNavigationTypeReload): @"reload",
-      @(WKNavigationTypeFormResubmitted): @"formresubmitted",
+      @(WKNavigationTypeFormResubmitted): @"formresubmit",
       @(WKNavigationTypeOther): @"other",
     };
   });

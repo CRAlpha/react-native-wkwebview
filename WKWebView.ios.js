@@ -29,7 +29,7 @@ var WebViewState = keyMirror({
 });
 
 const NavigationType = keyMirror({
-  click: true,
+  linkactivate: true,
   formsubmit: true,
   backforward: true,
   reload: true,
