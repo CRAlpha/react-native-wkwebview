@@ -319,6 +319,18 @@ var WKWebView = React.createClass({
   },
 
   /**
+   * Reloads the current page,
+   * performing end-to-end revalidation using cache-validating conditionals if possible.
+   */
+  reloadFromOrigin: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWKWebView.Commands.reloadFromOrigin,
+      null
+    );
+  },
+
+  /**
    * Stop loading the current page.
    */
   stopLoading: function() {
