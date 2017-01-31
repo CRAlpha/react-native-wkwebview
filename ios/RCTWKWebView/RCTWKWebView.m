@@ -19,6 +19,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, assign) BOOL sourceIsDirty;
 
 @end
 
@@ -48,6 +49,13 @@
     [self addSubview:_webView];
   }
   return self;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+    if ([changedProps containsObject:@"source"] && self.sourceIsDirty) {
+        [self executeDirtySource];
+    }
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
@@ -109,46 +117,51 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
-    
+    self.sourceIsDirty = YES;
+  }
+}
+
+- (void) executeDirtySource {
+    self.sourceIsDirty = NO;
+
     // Allow loading local files:
     // <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
     // Only works for iOS 9+. So iOS 8 will simply ignore those two values
-    NSString *file = [RCTConvert NSString:source[@"file"]];
-    NSString *allowingReadAccessToURL = [RCTConvert NSString:source[@"allowingReadAccessToURL"]];
+    NSString *file = [RCTConvert NSString:self.source[@"file"]];
+    NSString *allowingReadAccessToURL = [RCTConvert NSString:self.source[@"allowingReadAccessToURL"]];
     
     if (file && [_webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
-      NSURL *fileURL = [RCTConvert NSURL:file];
-      NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
-      [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
-      return;
+        NSURL *fileURL = [RCTConvert NSURL:file];
+        NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
+        [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
+        return;
     }
     
     // Check for a static html source first
-    NSString *html = [RCTConvert NSString:source[@"html"]];
+    NSString *html = [RCTConvert NSString:self.source[@"html"]];
     if (html) {
-      NSURL *baseURL = [RCTConvert NSURL:source[@"baseUrl"]];
-      if (!baseURL) {
-        baseURL = [NSURL URLWithString:@"about:blank"];
-      }
-      [_webView loadHTMLString:html baseURL:baseURL];
-      return;
+        NSURL *baseURL = [RCTConvert NSURL:self.source[@"baseUrl"]];
+        if (!baseURL) {
+            baseURL = [NSURL URLWithString:@"about:blank"];
+        }
+        [_webView loadHTMLString:html baseURL:baseURL];
+        return;
     }
     
-    NSURLRequest *request = [RCTConvert NSURLRequest:source];
+    NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
     // Because of the way React works, as pages redirect, we actually end up
     // passing the redirect urls back here, so we ignore them if trying to load
     // the same url. We'll expose a call to 'reload' to allow a user to load
     // the existing page.
     if ([request.URL isEqual:_webView.URL]) {
-      return;
+        return;
     }
     if (!request.URL) {
-      // Clear the webview
-      [_webView loadHTMLString:@"" baseURL:nil];
-      return;
+        // Clear the webview
+        [_webView loadHTMLString:@"" baseURL:nil];
+        return;
     }
     [self loadRequest:request];
-  }
 }
 
 - (void)layoutSubviews

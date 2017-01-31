@@ -75,6 +75,14 @@ It allows you to provide a fallback URL for iOS 8 users.
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
 ```
 
+- customUserAgent
+
+Set the user agent string to a be something other that the default, in the same way you can set `customUserAgent` on `WKWebView`. For example to pretend to be Google Chrome on OSX...
+
+```
+<WKWebView customUserAgent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.67 Safari/537.36' />
+```
+
 **From WKWebview -> React Native (New in 0.3.0)**
 
 - onMessage
@@ -91,7 +99,7 @@ Then in your webview, you can post message to React Native using
 window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
 ```
 
-Then your React Native should have 
+Then your React Native should have
 
 ```
 {name: 'reactNative', body: {data: 'hello!'}}
@@ -105,7 +113,7 @@ So I recommend to keep your data simple and JSON-friendly.
 
 **From React Native -> WkWebView (New in 0.3.0)**
 
-There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView, 
+There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView,
 you can define a callback method on your WebView:
 
 ```
