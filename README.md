@@ -91,7 +91,7 @@ Then in your webview, you can post message to React Native using
 window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
 ```
 
-Then your React Native should have 
+Then your React Native should have
 
 ```
 {name: 'reactNative', body: {data: 'hello!'}}
@@ -105,7 +105,7 @@ So I recommend to keep your data simple and JSON-friendly.
 
 **From React Native -> WkWebView (New in 0.3.0)**
 
-There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView, 
+There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView,
 you can define a callback method on your WebView:
 
 ```
@@ -141,6 +141,7 @@ this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from
 - url (deprecated)
 - bounces
 - onShouldStartLoadWithRequest
+- pagingEnabled
 - scrollEnabled
 
 **Unsupported props are:**
