@@ -198,6 +198,11 @@ var WKWebView = React.createClass({
      * of new window. Default is false to be backward compatible.
      */
     openNewWindowInWebView: PropTypes.bool,
+
+    /**
+    * Sets the customized user agent by using of the WKWebView
+    */
+    customUserAgent: PropTypes.string
   },
   getInitialState() {
     return {
@@ -275,6 +280,7 @@ var WKWebView = React.createClass({
         onProgress={this._onProgress}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        customUserAgent={this.props.customUserAgent}
       />;
 
     return (
