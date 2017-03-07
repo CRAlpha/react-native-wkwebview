@@ -109,6 +109,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
+    _sendCookies = source[@"sendCookies"] != 0;
     
     // Allow loading local files:
     // <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
