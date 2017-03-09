@@ -26,6 +26,7 @@
 {
   WKWebView *_webView;
   NSString *_injectedJavaScript;
+  BOOL *_sendCookies;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
