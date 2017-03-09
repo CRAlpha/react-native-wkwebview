@@ -253,7 +253,7 @@ var WKWebView = React.createClass({
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    var source = this.props.source || {};
+    var source = Object.assign({}, this.props.source || {} , { sendCookies: this.props.sendCookies });
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
@@ -272,7 +272,6 @@ var WKWebView = React.createClass({
         contentInset={this.props.contentInset}
         allowsBackForwardNavigationGestures={this.props.allowsBackForwardNavigationGestures}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
-        sendCookies={this.props.sendCookies}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
