@@ -19,6 +19,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (assign) BOOL sendCookies;
 
 @end
 
@@ -109,8 +110,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
-    _sendCookies = source[@"sendCookies"] != 0;
-    
+    _sendCookies = [source[@"sendCookies"] boolValue];
+    if ([source[@"customUserAgent"] length] != 0 && [_webView respondsToSelector:@selector(setCustomUserAgent:)]) {
+      [_webView setCustomUserAgent:source[@"customUserAgent"]];
+    }
+
     // Allow loading local files:
     // <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
     // Only works for iOS 9+. So iOS 8 will simply ignore those two values
