@@ -118,8 +118,8 @@ window.receivedMessageFromReactNative = function(data) {
 Then you can send message from React Native with this method call:
 
 ```
-// <WKWebView ref="webview" />
-this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from the other side.")');
+// <WKWebView ref={ref => { this.webview = ref; }} />
+this.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from the other side.")');
 ```
 
 **Currently supported props are:**
