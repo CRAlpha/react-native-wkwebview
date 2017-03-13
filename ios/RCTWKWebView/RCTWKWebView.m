@@ -27,6 +27,7 @@
 {
   WKWebView *_webView;
   NSString *_injectedJavaScript;
+  WKUserContentController *userController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -38,7 +39,7 @@
     _contentInset = UIEdgeInsetsZero;
     
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
-    WKUserContentController* userController = [[WKUserContentController alloc]init];
+    userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:self name:@"reactNative"];
     config.userContentController = userController;
     
@@ -58,6 +59,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (request.URL && _sendCookies) {
     NSDictionary *cookies = [NSHTTPCookie requestHeaderFieldsWithCookies:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:request.URL]];
     if ([cookies objectForKey:@"Cookie"]) {
+
+      NSMutableString* script = [[NSMutableString alloc] init];
+      
+      // Get the currently set cookie names in javascriptland
+      [script appendString:@"var cookieNames = document.cookie.split('; ').map(function(cookie) { return cookie.split('=')[0] } );\n"];
+      
+      for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
+        // Skip cookies that will break our script
+        if ([cookie.value rangeOfString:@"'"].location != NSNotFound) {
+          continue;
+        }
+        // Create a line that appends this cookie to the web view's document's cookies
+        [script appendFormat:@"if (cookieNames.indexOf('%@') == -1) { document.cookie='%@'; };\n", cookie.name, [self javascriptStringWithCookie:cookie]];
+      }
+      
+      WKUserScript *cookieInScript = [[WKUserScript alloc] initWithSource:script
+                                                            injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                                         forMainFrameOnly:NO];
+      
+      [userController addUserScript:cookieInScript];
+
       NSMutableURLRequest *mutableRequest = request.mutableCopy;
       [mutableRequest addValue:cookies[@"Cookie"] forHTTPHeaderField:@"Cookie"];
       request = mutableRequest;
@@ -65,6 +87,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
   
   [_webView loadRequest:request];
+}
+
+- (NSString *)javascriptStringWithCookie:(NSHTTPCookie*)cookie {
+  
+  NSString *string = [NSString stringWithFormat:@"%@=%@;domain=%@;path=%@",
+                      cookie.name,
+                      cookie.value,
+                      cookie.domain,
+                      cookie.path ?: @"/"];
+  
+  if (cookie.secure) {
+    string = [string stringByAppendingString:@";secure=true"];
+  }
+  
+  return string;
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
