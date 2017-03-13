@@ -41,6 +41,7 @@
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:self name:@"reactNative"];
+    [userController addScriptMessageHandler:self name:@"updateCookies"];
     config.userContentController = userController;
     
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
@@ -79,6 +80,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                          forMainFrameOnly:NO];
       
       [userController addUserScript:cookieInScript];
+      
+      WKUserScript *cookieOutScript = [[WKUserScript alloc] initWithSource:@"window.webkit.messageHandlers.updateCookies.postMessage(document.cookie);"
+                                                             injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                                          forMainFrameOnly:NO];
+      [userController addUserScript:cookieOutScript];
 
       NSMutableURLRequest *mutableRequest = request.mutableCopy;
       [mutableRequest addValue:cookies[@"Cookie"] forHTTPHeaderField:@"Cookie"];
@@ -108,6 +114,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_onMessage) {
     _onMessage(@{@"name":message.name, @"body": message.body});
+  }
+  
+  if (message.name == @"updateCookies") {
+    NSArray<NSString *> *cookies = [message.body componentsSeparatedByString:@"; "];
+    for (NSString *cookie in cookies) {
+      // Get this cookie's name and value
+      NSArray<NSString *> *comps = [cookie componentsSeparatedByString:@"="];
+      if (comps.count < 2) {
+        continue;
+      }
+      
+      // Get the cookie in shared storage with that name
+      NSHTTPCookie *localCookie = nil;
+      for (NSHTTPCookie *c in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:_webView.URL]) {
+        if ([c.name isEqualToString:comps[0]]) {
+          localCookie = c;
+          break;
+        }
+      }
+      
+      // If there is a cookie with a stale value, update it now.
+      if (localCookie) {
+        NSMutableDictionary *props = [localCookie.properties mutableCopy];
+        props[NSHTTPCookieValue] = comps[1];
+        NSHTTPCookie *updatedCookie = [NSHTTPCookie cookieWithProperties:props];
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:updatedCookie];
+      }
+    }
   }
 }
 
