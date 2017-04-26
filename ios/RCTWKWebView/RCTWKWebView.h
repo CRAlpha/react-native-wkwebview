@@ -13,26 +13,27 @@ extern NSString *const RCTJSNavigationScheme;
 @protocol RCTWKWebViewDelegate <NSObject>
 
 - (BOOL)webView:(RCTWKWebView *)webView
-shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
-   withCallback:(RCTDirectEventBlock)callback;
+    shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
+                 withCallback:(RCTDirectEventBlock)callback;
 
 @end
 
 @interface RCTWKWebView : RCTView
 
-@property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
+@property(nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 
-@property (nonatomic, copy) NSDictionary *source;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
-@property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-@property (nonatomic, assign) BOOL openNewWindowInWebView;
-@property (nonatomic, copy) NSString *injectedJavaScript;
-
+@property(nonatomic, copy) NSDictionary *source;
+@property(nonatomic, assign) UIEdgeInsets contentInset;
+@property(nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property(nonatomic, assign) BOOL openNewWindowInWebView;
+@property(nonatomic, copy) NSString *injectedJavaScript;
 
 - (void)goForward;
 - (void)goBack;
 - (void)reload;
 - (void)stopLoading;
-- (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;
-
+- (void)evaluateJavaScript:(NSString *)javaScriptString
+         completionHandler:(void (^)(id, NSError *error))completionHandler;
+-(void)removeData:(NSArray *)types
+         completionHandler:(void (^)(id, NSError *error))completionHandler;
 @end

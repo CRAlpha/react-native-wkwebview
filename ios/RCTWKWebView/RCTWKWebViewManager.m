@@ -112,6 +112,28 @@ RCT_EXPORT_METHOD(evaluateJavaScript:(nonnull NSNumber *)reactTag
   }];
 }
 
+RCT_EXPORT_METHOD(removeData:(nonnull NSNumber *)reactTag
+                  types:(NSArray *)types
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWKWebView, got: %@", view);
+    } else {
+      [view removeData:types completionHandler:^(id result, NSError *error) {
+        if (error) {
+          reject(@"removeFailed", @"Error calling removeData", error);
+        } else {
+          resolve(nil);
+        }
+      }];
+    }
+  }];
+  
+}
+
 #pragma mark - Exported synchronous methods
 
 - (BOOL)webView:(__unused RCTWKWebView *)webView
