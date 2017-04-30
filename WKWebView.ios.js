@@ -199,6 +199,11 @@ var WKWebView = React.createClass({
      */
     openNewWindowInWebView: PropTypes.bool,
     /**
+     * Hide the accessory view when the keyboard is open. Default is false to be
+     * backward compatible.
+     */
+    hideKeyboardAccessoryView: PropTypes.bool,
+    /**
      * Sets the customized user agent by using of the WKWebView
     */
     customUserAgent: PropTypes.string,
@@ -279,6 +284,7 @@ var WKWebView = React.createClass({
         allowsBackForwardNavigationGestures={this.props.allowsBackForwardNavigationGestures}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
+        hideKeyboardAccessoryView={this.props.hideKeyboardAccessoryView}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
