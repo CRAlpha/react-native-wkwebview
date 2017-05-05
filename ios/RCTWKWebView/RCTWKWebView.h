@@ -1,3 +1,5 @@
+#import <WebKit/WebKit.h>
+
 #import <React/RCTView.h>
 
 @class RCTWKWebView;
@@ -19,6 +21,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @end
 
 @interface RCTWKWebView : RCTView
+
+- (instancetype)initWithProcessPool:(WKProcessPool *)processPool;
 
 @property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 
