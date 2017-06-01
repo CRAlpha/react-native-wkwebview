@@ -256,7 +256,7 @@ var WKWebView = React.createClass({
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    var source = Object.assign({}, this.props.source || {} , { 
+    var source = Object.assign({}, this.props.source || {} , {
       sendCookies: this.props.sendCookies,
       customUserAgent: this.props.customUserAgent
     });
@@ -317,6 +317,20 @@ var WKWebView = React.createClass({
       null
     );
   },
+
+	/**
+   * Indicating whether there is a back item in the back-forward list that can be navigated to
+	 */
+	canGoBack: function(js) {
+		return WKWebViewManager.canGoBack(this.getWebViewHandle(), js);
+	},
+
+  /**
+   * Indicating whether there is a forward item in the back-forward list that can be navigated to
+	 */
+	canGoForward: function(js) {
+		return WKWebViewManager.canGoForward(this.getWebViewHandle(), js);
+	},
 
   /**
    * Reloads the current page.

@@ -28,7 +28,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL openNewWindowInWebView;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 
-
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
 - (void)goForward;
 - (void)goBack;
 - (void)reload;
