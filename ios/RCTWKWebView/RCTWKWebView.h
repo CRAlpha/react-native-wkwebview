@@ -33,7 +33,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 
-
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
 - (void)goForward;
 - (void)goBack;
 - (void)reload;
