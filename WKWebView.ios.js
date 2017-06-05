@@ -262,10 +262,13 @@ var WKWebView = React.createClass({
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    var source = Object.assign({}, this.props.source || {} , { 
-      sendCookies: this.props.sendCookies,
-      customUserAgent: this.props.customUserAgent || this.props.userAgent
-    });
+    if (this.props.source && typeof this.props.source == 'object') {
+      var source = Object.assign({}, this.props.source, { 
+        sendCookies: this.props.sendCookies,
+        customUserAgent: this.props.customUserAgent || this.props.userAgent
+      });
+    }
+
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
