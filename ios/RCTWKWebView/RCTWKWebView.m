@@ -12,6 +12,19 @@
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
+#import <objc/runtime.h>
+
+// runtime trick to remove WKWebView keyboard default toolbar
+// see: http://stackoverflow.com/questions/19033292/ios-7-uiwebview-keyboard-issue/19042279#19042279
+@interface _SwizzleHelper : NSObject @end
+@implementation _SwizzleHelper
+-(id)inputAccessoryView
+{
+  return nil;
+}
+@end
+
+
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -74,6 +87,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   
   [_webView loadRequest:request];
 }
+
+-(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
+{
+  if (!hideKeyboardAccessoryView) {
+    return;
+  }
+
+  UIView* subview;
+  for (UIView* view in _webView.scrollView.subviews) {
+    if([[view.class description] hasPrefix:@"WKContent"])
+      subview = view;
+  }
+
+  if(subview == nil) return;
+
+  NSString* name = [NSString stringWithFormat:@"%@_SwizzleHelper", subview.class.superclass];
+  Class newClass = NSClassFromString(name);
+
+  if(newClass == nil)
+  {
+    newClass = objc_allocateClassPair(subview.class, [name cStringUsingEncoding:NSASCIIStringEncoding], 0);
+    if(!newClass) return;
+
+    Method method = class_getInstanceMethod([_SwizzleHelper class], @selector(inputAccessoryView));
+      class_addMethod(newClass, @selector(inputAccessoryView), method_getImplementation(method), method_getTypeEncoding(method));
+
+    objc_registerClassPair(newClass);
+  }
+
+  object_setClass(subview, newClass);
+}
+
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
