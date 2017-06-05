@@ -295,7 +295,6 @@ var WKWebView = React.createClass({
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onProgress={this._onProgress}
-        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
       />;
