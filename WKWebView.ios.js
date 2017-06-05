@@ -207,6 +207,7 @@ var WKWebView = React.createClass({
      * Sets the customized user agent by using of the WKWebView
     */
     customUserAgent: PropTypes.string,
+    userAgent: PropTypes.string,
     /**
      * A Boolean value that determines whether paging is enabled for the scroll view.
     */
@@ -263,7 +264,7 @@ var WKWebView = React.createClass({
 
     var source = Object.assign({}, this.props.source || {} , { 
       sendCookies: this.props.sendCookies,
-      customUserAgent: this.props.customUserAgent
+      customUserAgent: this.props.customUserAgent || this.props.userAgent
     });
     if (this.props.html) {
       source.html = this.props.html;

@@ -14,7 +14,12 @@ export default class example extends Component {
   render() {
     return (
       <View style={{ flex: 1, marginTop: 20 }}>
-        <WkWebView style={{ backgroundColor: '#ff0000' }} customUserAgent="MyUserAgent" ref="webview" sendCookies={true} source={{ uri: 'https://httpbin.org/get' }} />
+        <WkWebView style={{ backgroundColor: '#ff0000' }} 
+          userAgent="MyFancyWebView"
+          hideKeyboardAccessoryView={false}
+          ref="webview" 
+          sendCookies={true} 
+          source={{ uri: 'https://httpbin.org/get' }} />
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.refs.webview.reload()}>Reload</Text>
       </View>
     );
