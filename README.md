@@ -21,7 +21,7 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 ### Usage
 
-```
+```javascript
 import WKWebView from 'react-native-wkwebview-reborn';
 ```
 
@@ -39,7 +39,7 @@ WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy U
 
 A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
 
-```
+```jsx
 <WKWebView onProgress={(progress) => console.log(progress)} />
 ```
 
@@ -58,7 +58,7 @@ Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when ca
 This allows WKWebView loads a local HTML file. Please note the underlying API is only introduced in iOS 9+. So in iOS 8, it will simple ignores these two properties.
 It allows you to provide a fallback URL for iOS 8 users.
 
-```
+```jsx
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
 ```
 
@@ -72,19 +72,19 @@ Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous 
 
 This utilizes the message handlers in WKWebView and allows you to post message from webview to React Native. For example:
 
-```
+```jsx
 <WKWebView onMessage={(e) => console.log(e)} />
 ```
 
 Then in your webview, you can post message to React Native using
 
-```
+```javascript
 window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
 ```
 
 Then your React Native should have
 
-```
+```json
 {name: 'reactNative', body: {data: 'hello!'}}
 ```
 
@@ -101,7 +101,7 @@ So I recommend to keep your data simple and JSON-friendly.
 There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView,
 you can define a callback method on your WebView:
 
-```
+```javascript
 window.receivedMessageFromReactNative = function(data) {
   // Code here
   console.log(data);
@@ -110,9 +110,9 @@ window.receivedMessageFromReactNative = function(data) {
 
 Then you can send message from React Native with this method call:
 
-```
+```javascript
 // <WKWebView ref="webview" />
-this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from the other side.")');
+this.refs.webview.evaluateJavaScript(receivedMessageFromReactNative("Hello from the other side."));
 ```
 
 #### Currently supported props are:
