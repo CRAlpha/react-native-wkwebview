@@ -23,7 +23,15 @@ export default class example extends Component {
   render() {
     return (
       <View style={{ flex: 1, marginTop: 20 }}>
-        <WkWebView style={{ backgroundColor: '#ff0000' }} customUserAgent="MyUserAgent" ref="webview" sendCookies={true} source={{ uri: 'https://httpbin.org/get' }} />
+        <WkWebView
+          style={{ backgroundColor: '#ff0000' }}
+          customUserAgent="MyUserAgent"
+          ref="webview"
+          sendCookies={true}
+          source={{ uri: 'https://httpbin.org/get' }}
+          onMessage={(e) => console.log(e.nativeEvent)}
+          evaluateJavaScript={'setTimeout(() => { window.postMessage("hi", "*") }, 1000)'}
+        />
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.refs.webview.reload()}>Reload</Text>
       </View>
     );
