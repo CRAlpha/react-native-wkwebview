@@ -154,6 +154,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)reloadFromOrigin
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
+  if (request.URL && !_webView.URL.absoluteString.length) {
+    [_webView loadRequest:request];
+  }
+  else {
+    [_webView reloadFromOrigin];
+  }
+}
+
 - (void)stopLoading
 {
   [_webView stopLoading];
@@ -285,13 +296,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSString* scheme = url.scheme;
   
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
-  
+
+  static NSDictionary<NSNumber *, NSString *> *navigationTypes;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    navigationTypes = @{
+      @(WKNavigationTypeLinkActivated): @"linkactivate",
+      @(WKNavigationTypeFormSubmitted): @"formsubmit",
+      @(WKNavigationTypeBackForward): @"backforward",
+      @(WKNavigationTypeReload): @"reload",
+      @(WKNavigationTypeFormResubmitted): @"formresubmit",
+      @(WKNavigationTypeOther): @"other",
+    };
+  });
+
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
                                        @"url": (request.URL).absoluteString,
-                                       @"navigationType": @(navigationAction.navigationType)
+                                       @"navigationType": navigationTypes[@(navigationAction.navigationType)]
                                        }];
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
@@ -307,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSMutableDictionary<NSString *, id> *event = [self baseEvent];
       [event addEntriesFromDictionary: @{
                                          @"url": url.absoluteString,
-                                         @"navigationType": @(navigationAction.navigationType)
+                                         @"navigationType": navigationTypes[@(navigationAction.navigationType)]
                                          }];
       _onLoadingStart(event);
     }

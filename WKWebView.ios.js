@@ -29,7 +29,7 @@ var WebViewState = keyMirror({
 });
 
 const NavigationType = keyMirror({
-  click: true,
+  linkactivate: true,
   formsubmit: true,
   backforward: true,
   reload: true,
@@ -332,6 +332,18 @@ var WKWebView = React.createClass({
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
+      null
+    );
+  },
+
+  /**
+   * Reloads the current page,
+   * performing end-to-end revalidation using cache-validating conditionals if possible.
+   */
+  reloadFromOrigin: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWKWebView.Commands.reloadFromOrigin,
       null
     );
   },
