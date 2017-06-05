@@ -62,9 +62,13 @@ It allows you to provide a fallback URL for iOS 8 users.
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
 ```
 
-- **customUserAgent="MyUserAgent"**
+- **userAgent="MyUserAgent" (or customUserAgent="...")**
 
 Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous version will simply ignore this props.
+
+- **hideKeyboardAccessoryView**
+
+This will hide the keyboard accesory view (`<` `>` and `Done`). Default is false.
 
 #### Communication from WKWebview to React Native
 
