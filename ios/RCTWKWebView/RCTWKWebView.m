@@ -2,7 +2,6 @@
 
 #import "WeakScriptMessageDelegate.h"
 
-#import <WebKit/WebKit.h>
 #import <UIKit/UIKit.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
@@ -33,13 +32,22 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:frame])) {
+  return self = [super initWithFrame:frame];
+}
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (instancetype)initWithProcessPool:(WKProcessPool *)processPool
+{
+  if(self = [self initWithFrame:CGRectZero])
+  {
     super.backgroundColor = [UIColor clearColor];
     
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    config.processPool = processPool;
     WKUserContentController* userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
@@ -52,8 +60,6 @@
   }
   return self;
 }
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)loadRequest:(NSURLRequest *)request
 {
