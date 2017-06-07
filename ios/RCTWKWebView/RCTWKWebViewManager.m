@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
+#import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
 
