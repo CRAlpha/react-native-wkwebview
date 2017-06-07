@@ -314,10 +314,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     #if RCT_DEV
     // See isNative in lodash
     NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-    
+
     [webView evaluateJavaScript:testPostMessageNative completionHandler:^(id result, NSError *error) {
       if (!result) {
-        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+        RCTLogWarn(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
       }
     }];
     #endif
@@ -327,7 +327,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                         "return window.webkit.messageHandlers.reactNative.postMessage.apply(window.webkit.messageHandlers.reactNative, arguments);"
                         "};"
                         ];
-    
+
     [webView evaluateJavaScript:source completionHandler:nil];
   }
   if (_injectedJavaScript != nil) {
