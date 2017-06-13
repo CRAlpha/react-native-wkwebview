@@ -321,6 +321,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
+{
+    if (_sendCookies)
+    {
+      NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields forURL:((NSHTTPURLResponse *)navigationResponse.response).URL];
+      
+      for (int i = 0; i < cookies.count; i++) {
+        NSHTTPCookie *cookie = [cookies objectAtIndex:i];
+        NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+      }
+    }
+  
+  decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
 - (void)webView:(__unused WKWebView *)webView didFailProvisionalNavigation:(__unused WKNavigation *)navigation withError:(NSError *)error
 {
   if (_onLoadingError) {
