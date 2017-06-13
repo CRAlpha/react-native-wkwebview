@@ -516,6 +516,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 <<<<<<< HEAD:ios/RCTWKWebView/CRAWKWebView.m
+<<<<<<< HEAD:ios/RCTWKWebView/CRAWKWebView.m
 =======
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 {
@@ -526,11 +527,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
   }
+=======
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
+{
+    if (_sendCookies)
+    {
+      NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields forURL:((NSHTTPURLResponse *)navigationResponse.response).URL];
+      
+      for (int i = 0; i < cookies.count; i++) {
+        NSHTTPCookie *cookie = [cookies objectAtIndex:i];
+        NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+      }
+    }
+>>>>>>> 7199f9a... RFC 6265, section 4.1: Set-Cookie;:ios/RCTWKWebView/RCTWKWebView.m
   
   decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
+<<<<<<< HEAD:ios/RCTWKWebView/CRAWKWebView.m
 >>>>>>> 36ab933... Always read Set-Cookie;:ios/RCTWKWebView/RCTWKWebView.m
+=======
+>>>>>>> 7199f9a... RFC 6265, section 4.1: Set-Cookie;:ios/RCTWKWebView/RCTWKWebView.m
 - (void)webView:(__unused WKWebView *)webView didFailProvisionalNavigation:(__unused WKNavigation *)navigation withError:(NSError *)error
 {
   if (_onLoadingError) {
