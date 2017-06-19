@@ -36,6 +36,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 
 - (void)goForward;
 - (void)goBack;
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
 - (void)reload;
 - (void)stopLoading;
 - (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;

@@ -81,24 +81,24 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 }
 
 RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
     
-    callback(@[[NSNull null], [NSNumber numberWithBool:[view canGoBack]]]);
+    resolve([view canGoBack]);
   }];
 }
 
 RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
     
-    callback(@[[NSNull null], [NSNumber numberWithBool:[view canGoForward]]]);
+    resolve([view canGoForward]);
   }];
 }
 
