@@ -87,7 +87,7 @@ RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
     
-    resolve([view canGoBack]);
+    resolve([NSNumber numberWithBool:[view canGoBack]]);
   }];
 }
 
@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
     
-    resolve([view canGoForward]);
+    resolve([NSNumber numberWithBool:[view canGoForward]]);
   }];
 }
 
