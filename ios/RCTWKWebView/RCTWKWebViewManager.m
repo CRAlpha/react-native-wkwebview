@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
+#import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
 
@@ -76,6 +77,28 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
     } else {
       [view goForward];
     }
+  }];
+}
+
+RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoBack]]);
+  }];
+}
+
+RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoForward]]);
   }];
 }
 

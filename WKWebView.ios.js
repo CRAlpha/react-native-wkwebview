@@ -329,6 +329,20 @@ var WKWebView = React.createClass({
   },
 
   /**
+   * Indicating whether there is a back item in the back-forward list that can be navigated to
+   */
+  canGoBack: function() {
+    return WKWebViewManager.canGoBack(this.getWebViewHandle());
+  },
+
+  /**
+   * Indicating whether there is a forward item in the back-forward list that can be navigated to
+   */
+  canGoForward: function() {
+    return WKWebViewManager.canGoForward(this.getWebViewHandle());
+  },
+
+  /**
    * Reloads the current page.
    */
   reload: function() {

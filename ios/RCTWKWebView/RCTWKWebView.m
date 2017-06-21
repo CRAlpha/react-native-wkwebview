@@ -143,6 +143,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView goBack];
 }
 
+- (BOOL)canGoBack
+{
+  return [_webView canGoBack];
+}
+
+- (BOOL)canGoForward
+{
+  return [_webView canGoForward];
+}
+
 - (void)reload
 {
   NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
