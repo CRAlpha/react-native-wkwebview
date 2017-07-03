@@ -41,6 +41,8 @@
 {
   WKWebView *_webView;
   NSString *_injectedJavaScript;
+  NSDictionary *_intialSource;
+  WKWebViewConfiguration *_config;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -52,7 +54,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (instancetype)initWithProcessPool:(WKProcessPool *)processPool
 {
-  if(self = [self initWithFrame:CGRectZero])
+  if (self = [self initWithFrame:CGRectZero])
   {
     super.backgroundColor = [UIColor clearColor];
     
@@ -64,14 +66,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     WKUserContentController* userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
-    
-    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
+
+    _config = config;
+  }
+  return self;
+}
+
+- (void)setupWebView
+{
+  if (!_webView) {
+    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:_config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
-  return self;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if (!_webView) {
+    [self setupWebView];
+    if (_intialSource) {
+      self.source = _intialSource;
+      _intialSource = nil;
+    }
+    self.contentInset = _contentInset;
+    self.backgroundColor = self.backgroundColor;
+    self.bounces = _bounces;
+    self.pagingEnabled = _pagingEnabled;
+    self.scrollEnabled = _scrollEnabled;
+    self.allowsBackForwardNavigationGestures = _allowsBackForwardNavigationGestures;
+  }
 }
 
 - (void)loadRequest:(NSURLRequest *)request
@@ -88,9 +114,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView loadRequest:request];
 }
 
+- (void)setUserScript:(NSString *)scriptSource
+{
+  RCTAssert(!_webView, @"userScript cannot be mutated");
+  WKUserScript* userScript = [[WKUserScript alloc] initWithSource:scriptSource injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:NO];
+  [_config.userContentController addUserScript:userScript];
+}
+
 -(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
 {
-  if (!hideKeyboardAccessoryView) {
+  _hideKeyboardAccessoryView = hideKeyboardAccessoryView;
+  if (!_webView || !hideKeyboardAccessoryView) {
     return;
   }
 
@@ -171,6 +205,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setSource:(NSDictionary *)source
 {
+  if (!_webView) {
+    _intialSource = [source copy];
+    return;
+  }
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
     _sendCookies = [source[@"sendCookies"] boolValue];
@@ -222,27 +260,57 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  _webView.frame = self.bounds;
+  if (_webView) {
+    _webView.frame = self.bounds;
+  }
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   _contentInset = contentInset;
-  [RCTView autoAdjustInsetsForView:self
-                    withScrollView:_webView.scrollView
-                      updateOffset:NO];
+  if (_webView) {
+    [RCTView autoAdjustInsetsForView:self
+                      withScrollView:_webView.scrollView
+                        updateOffset:NO];
+  }
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
+  [super setBackgroundColor:backgroundColor];
   CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
-  self.opaque = _webView.opaque = _webView.scrollView.opaque = (alpha == 1.0);
-  _webView.backgroundColor = _webView.scrollView.backgroundColor = backgroundColor;
+  if (_webView) {
+    self.opaque = _webView.opaque = _webView.scrollView.opaque = (alpha == 1.0);
+    _webView.backgroundColor = _webView.scrollView.backgroundColor = backgroundColor;
+  }
 }
 
-- (UIColor *)backgroundColor
-{
-  return _webView.backgroundColor;
+- (void) setBounces:(BOOL) bounces {
+  _bounces = bounces;
+  if (_webView) {
+    _webView.scrollView.bounces = bounces;
+  }
+}
+
+- (void) setPagingEnabled:(BOOL) pagingEnabled {
+  _pagingEnabled = pagingEnabled;
+  if (_webView) {
+    _webView.scrollView.pagingEnabled = pagingEnabled;
+  }
+}
+
+- (void) setScrollEnabled:(BOOL) scrollEnabled {
+  _scrollEnabled = scrollEnabled;
+  if (_webView) {
+    _webView.scrollView.scrollEnabled = scrollEnabled;
+  }
+}
+
+- (void) setAllowsBackForwardNavigationGestures:(BOOL) allowsBackForwardNavigationGestures {
+  _allowsBackForwardNavigationGestures = allowsBackForwardNavigationGestures;
+  if (_webView) {
+    _webView.allowsBackForwardNavigationGestures = allowsBackForwardNavigationGestures;
+  }
 }
 
 - (NSMutableDictionary<NSString *, id> *)baseEvent

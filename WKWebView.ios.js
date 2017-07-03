@@ -183,6 +183,10 @@ var WKWebView = React.createClass({
      */
     injectedJavaScript: PropTypes.string,
     /**
+     * Sets the JS to be injected for every frame.
+     */
+    userScript: PropTypes.string,
+    /**
      * Allows custom handling of any webview requests by a JS handler. Return true
      * or false from this method to continue loading the request.
      * @platform ios
@@ -282,6 +286,7 @@ var WKWebView = React.createClass({
         style={webViewStyles}
         source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
+        userScript={this.props.userScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
