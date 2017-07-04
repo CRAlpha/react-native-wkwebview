@@ -60,6 +60,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
+    _scrollEnabled = YES;
+    _bounces = YES;
+    _pagingEnabled = NO;
+    _allowsBackForwardNavigationGestures = YES;
     
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     config.processPool = processPool;
