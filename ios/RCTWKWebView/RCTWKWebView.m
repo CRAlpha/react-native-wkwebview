@@ -148,7 +148,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                   @"data": message,
                                   };
   NSString *source = [NSString
-                      stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+                      stringWithFormat:@"window.dispatchEvent(new MessageEvent('message', %@));",
                       RCTJSONStringify(eventInitDict, NULL)
                       ];
   [_webView evaluateJavaScript:source completionHandler:nil];
