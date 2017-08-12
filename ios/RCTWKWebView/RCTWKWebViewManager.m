@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
+#import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
 
@@ -16,13 +17,24 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
+  WKProcessPool *_processPool;
+}
+
+- (id)init {
+  self = [super init];
+  
+  if (self) {
+    _processPool = [[WKProcessPool alloc] init];
+  }
+  
+  return self;
 }
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [RCTWKWebView new];
+  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:_processPool];
   webView.delegate = self;
   return webView;
 }
@@ -66,6 +78,28 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
     } else {
       [view goForward];
     }
+  }];
+}
+
+RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoBack]]);
+  }];
+}
+
+RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoForward]]);
   }];
 }
 

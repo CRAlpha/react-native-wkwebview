@@ -207,6 +207,7 @@ var WKWebView = React.createClass({
      * Sets the customized user agent by using of the WKWebView
     */
     customUserAgent: PropTypes.string,
+    userAgent: PropTypes.string,
     /**
      * A Boolean value that determines whether paging is enabled for the scroll view.
     */
@@ -265,10 +266,13 @@ var WKWebView = React.createClass({
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    var source = Object.assign({}, this.props.source || {} , { 
-      sendCookies: this.props.sendCookies,
-      customUserAgent: this.props.customUserAgent
-    });
+    if (this.props.source && typeof this.props.source == 'object') {
+      var source = Object.assign({}, this.props.source, { 
+        sendCookies: this.props.sendCookies,
+        customUserAgent: this.props.customUserAgent || this.props.userAgent
+      });
+    }
+
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
@@ -327,6 +331,20 @@ var WKWebView = React.createClass({
       UIManager.RCTWKWebView.Commands.goBack,
       null
     );
+  },
+
+  /**
+   * Indicating whether there is a back item in the back-forward list that can be navigated to
+   */
+  canGoBack: function() {
+    return WKWebViewManager.canGoBack(this.getWebViewHandle());
+  },
+
+  /**
+   * Indicating whether there is a forward item in the back-forward list that can be navigated to
+   */
+  canGoForward: function() {
+    return WKWebViewManager.canGoForward(this.getWebViewHandle());
   },
 
   /**
