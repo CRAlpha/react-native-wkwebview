@@ -19,12 +19,6 @@
   BOOL _shouldStartLoad;
 }
 
-- (id)init {
-  self = [super init];
-
-  return self;
-}
-
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
