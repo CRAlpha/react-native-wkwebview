@@ -212,6 +212,10 @@ var WKWebView = React.createClass({
      * A Boolean value that determines whether paging is enabled for the scroll view.
     */
     pagingEnabled: PropTypes.bool,
+    /**
+     * A Boolean value that sets whether diagonal scrolling is allowed.
+    */
+    directionalLockEnabled: PropTypes.bool,
   },
   getInitialState() {
     return {
@@ -296,6 +300,7 @@ var WKWebView = React.createClass({
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
+        directionalLockEnabled={this.props.directionalLockEnabled}
       />;
 
     return (
