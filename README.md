@@ -72,6 +72,10 @@ Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous 
 
 This will hide the keyboard accesory view (`<` `>` and `Done`). Default is false.
 
+- **userScript**
+
+Similar to `injectedJavaScript` but will be injected for every frame upon load. Cannot be changed after first render.
+
 #### Communication from WKWebview to React Native
 
 - **onMessage**
