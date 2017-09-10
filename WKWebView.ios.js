@@ -18,12 +18,12 @@ import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import invariant from 'fbjs/lib/invariant';
 import keyMirror from 'fbjs/lib/keyMirror';
-var WKWebViewManager = NativeModules.WKWebViewManager;
+const WKWebViewManager = NativeModules.WKWebViewManager;
 
-var BGWASH = 'rgba(255,255,255,0.8)';
-var RCT_WEBVIEW_REF = 'webview';
+const BGWASH = 'rgba(255,255,255,0.8)';
+const RCT_WEBVIEW_REF = 'webview';
 
-var WebViewState = keyMirror({
+const WebViewState = keyMirror({
   IDLE: null,
   LOADING: null,
   ERROR: null,
@@ -48,12 +48,12 @@ type ErrorEvent = {
 
 type Event = Object;
 
-var defaultRenderLoading = () => (
+const defaultRenderLoading = () => (
   <View style={styles.loadingView}>
     <ActivityIndicator />
   </View>
 );
-var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
+const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   <View style={styles.errorContainer}>
     <Text style={styles.errorTextTitle}>
       Error loading page
@@ -231,12 +231,12 @@ class WKWebView extends React.Component {
   }
 
   render() {
-    var otherView = null;
+    let otherView = null;
 
     if (this.state.viewState === WebViewState.LOADING) {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
-      var errorEvent = this.state.lastErrorEvent;
+      const errorEvent = this.state.lastErrorEvent;
       invariant(
         errorEvent != null,
         'lastErrorEvent expected to be non-null'
@@ -252,21 +252,22 @@ class WKWebView extends React.Component {
       );
     }
 
-    var webViewStyles = [styles.container, styles.webView, this.props.style];
+    const webViewStyles = [styles.container, styles.webView, this.props.style];
     if (this.state.viewState === WebViewState.LOADING ||
       this.state.viewState === WebViewState.ERROR) {
       // if we're in either LOADING or ERROR states, don't show the webView
       webViewStyles.push(styles.hidden);
     }
 
-    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
-      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+    const onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
+      const shouldStart = this.props.onShouldStartLoadWithRequest &&
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
+    let source = {};
     if (this.props.source && typeof this.props.source == 'object') {
-      var source = Object.assign({}, this.props.source, { 
+      source = Object.assign({}, this.props.source, { 
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
       });
@@ -278,7 +279,7 @@ class WKWebView extends React.Component {
       source.uri = this.props.url;
     }
 
-    var webView =
+    const webView =
       <RCTWKWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
@@ -390,14 +391,14 @@ class WKWebView extends React.Component {
   };
 
   _onLoadingStart = (event: Event) => {
-    var onLoadStart = this.props.onLoadStart;
+    const onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
   };
 
   _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
-    var {onError, onLoadEnd} = this.props;
+    const {onError, onLoadEnd} = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
@@ -409,7 +410,7 @@ class WKWebView extends React.Component {
   };
 
   _onLoadingFinish = (event: Event) => {
-    var {onLoad, onLoadEnd} = this.props;
+    const {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
@@ -419,17 +420,17 @@ class WKWebView extends React.Component {
   };
 
   _onProgress = (event: Event) => {
-    var onProgress = this.props.onProgress;
+    const onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
   };
 
   _onMessage = (event: Event) => {
-    var onMessage = this.props.onMessage;
+    const onMessage = this.props.onMessage;
     onMessage && onMessage(event.nativeEvent);
   };
 }
 
-var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
+const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
   nativeOnly: {
     onLoadingStart: true,
     onLoadingError: true,
@@ -437,7 +438,7 @@ var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
