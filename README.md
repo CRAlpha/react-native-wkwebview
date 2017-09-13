@@ -142,6 +142,7 @@ this.refs.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from
 - onShouldStartLoadWithRequest
 - pagingEnabled
 - scrollEnabled
+- directionalLockEnabled
 
 ####  Unsupported props are:
 
