@@ -464,4 +464,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return nil;
 }
 
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
+{
+  RCTLogWarn(@"Webview Process Terminated");
+}
+
 @end
