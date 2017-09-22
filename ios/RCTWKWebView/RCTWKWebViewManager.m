@@ -17,24 +17,13 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
-  WKProcessPool *_processPool;
-}
-
-- (id)init {
-  self = [super init];
-  
-  if (self) {
-    _processPool = [[WKProcessPool alloc] init];
-  }
-  
-  return self;
 }
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:_processPool];
+  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[[WKProcessPool alloc] init]];
   webView.delegate = self;
   return webView;
 }
@@ -43,6 +32,7 @@ RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(allowsBackForwardNavigationGestures, _webView.allowsBackForwardNavigationGestures, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(openNewWindowInWebView, BOOL)
