@@ -116,6 +116,34 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
   }];
 }
 
+
+RCT_EXPORT_METHOD(screenshot:(nonnull NSNumber *)reactTag
+                  withOptions:(NSDictionary *)options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, YES, 0);
+    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:YES];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSError *error = nil;
+      NSData *data;
+      NSString *res = nil;
+      data = UIImagePNGRepresentation(image);
+      res = [data base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
+      if (res && !error) {
+        resolve(res);
+        return;
+      }
+      if (error) reject(RCTErrorUnspecified, error.localizedDescription, error);
+      else reject(RCTErrorUnspecified, @"viewshot unknown error", nil);
+    });
+  }];
+}
+
 RCT_EXPORT_METHOD(evaluateJavaScript:(nonnull NSNumber *)reactTag
                   js:(NSString *)js
                   resolver:(RCTPromiseResolveBlock)resolve
