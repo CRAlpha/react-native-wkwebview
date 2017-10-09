@@ -78,7 +78,6 @@ class WKWebView extends React.PureComponent {
     NavigationType: NavigationType,
   }
   static propTypes = {
-    ...View.propTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -176,7 +175,6 @@ class WKWebView extends React.PureComponent {
     onNavigationStateChange: PropTypes.func,
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
-    style: View.propTypes.style,
     /**
      * Sets the JS to be injected when the webpage loads.
      */
@@ -217,12 +215,13 @@ class WKWebView extends React.PureComponent {
     directionalLockEnabled: PropTypes.bool,
   }
 
-  getInitialState() {
-    return {
+  constructor(props) {
+    super(props)
+    this.state = {
       viewState: WebViewState.IDLE,
       lastErrorEvent: (null: ?ErrorEvent),
       startInLoadingState: true,
-    };
+    }
   }
 
   componentWillMount() {
@@ -314,7 +313,7 @@ class WKWebView extends React.PureComponent {
   /**
    * Go forward one page in the webview's history.
    */
-  goForward() {
+  goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goForward,
@@ -325,7 +324,7 @@ class WKWebView extends React.PureComponent {
   /**
    * Go back one page in the webview's history.
    */
-  goBack() {
+  goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goBack,
@@ -336,21 +335,21 @@ class WKWebView extends React.PureComponent {
   /**
    * Indicating whether there is a back item in the back-forward list that can be navigated to
    */
-  canGoBack() {
+  canGoBack = () => {
     return WKWebViewManager.canGoBack(this.getWebViewHandle());
   }
 
   /**
    * Indicating whether there is a forward item in the back-forward list that can be navigated to
    */
-  canGoForward() {
+  canGoForward = () => {
     return WKWebViewManager.canGoForward(this.getWebViewHandle());
   }
 
   /**
    * Reloads the current page.
    */
-  reload() {
+  reload = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
@@ -361,7 +360,7 @@ class WKWebView extends React.PureComponent {
   /**
    * Stop loading the current page.
    */
-  stopLoading() {
+  stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.stopLoading,
@@ -369,7 +368,7 @@ class WKWebView extends React.PureComponent {
     )
   }
 
-  evaluateJavaScript(js) {
+  evaluateJavaScript = (js) => {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   }
 
@@ -377,7 +376,7 @@ class WKWebView extends React.PureComponent {
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  _updateNavigationState(event: Event) {
+  _updateNavigationState = (event: Event) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
@@ -386,17 +385,17 @@ class WKWebView extends React.PureComponent {
   /**
    * Returns the native webview node.
    */
-  getWebViewHandle(): any {
+  getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   }
 
-  _onLoadingStart(event: Event) {
+  _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
   }
 
-  _onLoadingError(event: Event) {
+  _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -409,7 +408,7 @@ class WKWebView extends React.PureComponent {
     });
   }
 
-  _onLoadingFinish(event: Event) {
+  _onLoadingFinish = (event: Event) => {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
@@ -419,12 +418,12 @@ class WKWebView extends React.PureComponent {
     this._updateNavigationState(event);
   }
 
-  _onProgress(event: Event) {
+  _onProgress = (event: Event) => {
     var onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
   }
 
-  _onMessage(event: Event) {
+  _onMessage = (event: Event) => {
     var onMessage = this.props.onMessage;
     onMessage && onMessage(event.nativeEvent);
   }
