@@ -2,3 +2,4 @@
 */.DS_Store
 
 ios/RCTWKWebView.xcodeproj/xcuserdata/*
+node_modules

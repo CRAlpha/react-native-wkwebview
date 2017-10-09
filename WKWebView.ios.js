@@ -1,8 +1,7 @@
 'use strict';
 
-import React, {
-  PropTypes
-} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types'
 import ReactNative, {
   requireNativeComponent,
   EdgeInsetsPropType,
@@ -73,13 +72,12 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * Renders a native WebView.
  */
 
-var WKWebView = React.createClass({
-  statics: {
+class WKWebView extends React.PureComponent {
+  static statics = {
     JSNavigationScheme: JSNavigationScheme,
     NavigationType: NavigationType,
-  },
-  propTypes: {
-    ...View.propTypes,
+  }
+  static propTypes = {
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -177,7 +175,6 @@ var WKWebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
-    style: View.propTypes.style,
     /**
      * Sets the JS to be injected when the webpage loads.
      */
@@ -216,20 +213,22 @@ var WKWebView = React.createClass({
      * A Boolean value that sets whether diagonal scrolling is allowed.
     */
     directionalLockEnabled: PropTypes.bool,
-  },
-  getInitialState() {
-    return {
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
       viewState: WebViewState.IDLE,
       lastErrorEvent: (null: ?ErrorEvent),
       startInLoadingState: true,
-    };
-  },
+    }
+  }
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
-  },
+  }
 
   render() {
     var otherView = null;
@@ -267,7 +266,7 @@ var WKWebView = React.createClass({
     });
 
     if (this.props.source && typeof this.props.source == 'object') {
-      var source = Object.assign({}, this.props.source, { 
+      var source = Object.assign({}, this.props.source, {
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
       });
@@ -309,94 +308,94 @@ var WKWebView = React.createClass({
         {otherView}
       </View>
     );
-  },
+  }
 
   /**
    * Go forward one page in the webview's history.
    */
-  goForward: function() {
+  goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goForward,
       null
     );
-  },
+  }
 
   /**
    * Go back one page in the webview's history.
    */
-  goBack: function() {
+  goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goBack,
       null
     );
-  },
+  }
 
   /**
    * Indicating whether there is a back item in the back-forward list that can be navigated to
    */
-  canGoBack: function() {
+  canGoBack = () => {
     return WKWebViewManager.canGoBack(this.getWebViewHandle());
-  },
+  }
 
   /**
    * Indicating whether there is a forward item in the back-forward list that can be navigated to
    */
-  canGoForward: function() {
+  canGoForward = () => {
     return WKWebViewManager.canGoForward(this.getWebViewHandle());
-  },
+  }
 
   /**
    * Reloads the current page.
    */
-  reload: function() {
+  reload = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
       null
     );
-  },
+  }
 
   /**
    * Stop loading the current page.
    */
-  stopLoading: function() {
+  stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.stopLoading,
       null
     )
-  },
+  }
 
-  evaluateJavaScript: function(js) {
+  evaluateJavaScript = (js) => {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
-  },
+  }
 
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  _updateNavigationState: function(event: Event) {
+  _updateNavigationState = (event: Event) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
-  },
+  }
 
   /**
    * Returns the native webview node.
    */
-  getWebViewHandle: function(): any {
+  getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
-  },
+  }
 
-  _onLoadingStart: function(event: Event) {
+  _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
-  },
+  }
 
-  _onLoadingError: function(event: Event) {
+  _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -407,9 +406,9 @@ var WKWebView = React.createClass({
       lastErrorEvent: event.nativeEvent,
       viewState: WebViewState.ERROR
     });
-  },
+  }
 
-  _onLoadingFinish: function(event: Event) {
+  _onLoadingFinish = (event: Event) => {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
@@ -417,18 +416,18 @@ var WKWebView = React.createClass({
       viewState: WebViewState.IDLE,
     });
     this._updateNavigationState(event);
-  },
+  }
 
-  _onProgress(event: Event) {
+  _onProgress = (event: Event) => {
     var onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
-  },
+  }
 
-  _onMessage(event: Event) {
+  _onMessage = (event: Event) => {
     var onMessage = this.props.onMessage;
     onMessage && onMessage(event.nativeEvent);
   }
-});
+}
 
 var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
   nativeOnly: {
