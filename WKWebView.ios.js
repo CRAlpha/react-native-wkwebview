@@ -20,7 +20,6 @@ import keyMirror from 'fbjs/lib/keyMirror';
 var WKWebViewManager = NativeModules.WKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
-var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -281,7 +280,7 @@ var WKWebView = React.createClass({
 
     var webView =
       <RCTWKWebView
-        ref={RCT_WEBVIEW_REF}
+        ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
@@ -387,7 +386,7 @@ var WKWebView = React.createClass({
    * Returns the native webview node.
    */
   getWebViewHandle: function(): any {
-    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.webview);
   },
 
   _onLoadingStart: function(event: Event) {
