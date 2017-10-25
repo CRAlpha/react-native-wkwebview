@@ -1,8 +1,8 @@
 'use strict';
 
-import React, {
-  PropTypes
-} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import createReactClass from 'create-react-class';
 import ReactNative, {
   requireNativeComponent,
   EdgeInsetsPropType,
@@ -72,7 +72,7 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * Renders a native WebView.
  */
 
-var WKWebView = React.createClass({
+var WKWebView = createReactClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
     NavigationType: NavigationType,
