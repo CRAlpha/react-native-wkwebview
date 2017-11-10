@@ -1,8 +1,8 @@
 'use strict';
 
-import React, {
-  PropTypes
-} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import createReactClass from 'create-react-class';
 import ReactNative, {
   requireNativeComponent,
   EdgeInsetsPropType,
@@ -11,7 +11,8 @@ import ReactNative, {
   View,
   NativeModules,
   Text,
-  ActivityIndicator
+  ActivityIndicator,
+  ViewPropTypes
 } from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
@@ -20,7 +21,6 @@ import keyMirror from 'fbjs/lib/keyMirror';
 var WKWebViewManager = NativeModules.WKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
-var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -73,13 +73,13 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * Renders a native WebView.
  */
 
-var WKWebView = React.createClass({
+var WKWebView = createReactClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
     NavigationType: NavigationType,
   },
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -177,7 +177,7 @@ var WKWebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     /**
      * Sets the JS to be injected when the webpage loads.
      */
@@ -298,7 +298,7 @@ var WKWebView = React.createClass({
 
     var webView =
       <RCTWKWebView
-        ref={RCT_WEBVIEW_REF}
+        ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
@@ -405,7 +405,7 @@ var WKWebView = React.createClass({
    * Returns the native webview node.
    */
   getWebViewHandle: function(): any {
-    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.webview);
   },
 
   _onLoadingStart: function(event: Event) {

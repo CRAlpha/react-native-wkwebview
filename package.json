@@ -43,7 +43,9 @@
     "url": "https://github.com/CRAlpha/react-native-wkwebview/issues"
   },
   "dependencies": {
-    "fbjs": "^0.8.3"
+    "create-react-class": "^15.6.2",
+    "fbjs": "^0.8.3",
+    "prop-types": "^15.6.0"
   },
   "description": "React Native WKWebView for iOS",
   "devDependencies": {},
@@ -75,5 +77,5 @@
   "scripts": {
     "lint": "eslint --ext .js --ext .jsx ."
   },
-  "version": "1.8.0"
+  "version": "1.9.0"
 }
