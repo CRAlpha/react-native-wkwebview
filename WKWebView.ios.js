@@ -1,8 +1,7 @@
 'use strict';
 
-import PropTypes from 'prop-types';
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactNative, {
   requireNativeComponent,
   EdgeInsetsPropType,
@@ -20,8 +19,7 @@ import invariant from 'fbjs/lib/invariant';
 import keyMirror from 'fbjs/lib/keyMirror';
 const WKWebViewManager = NativeModules.WKWebViewManager;
 
-const BGWASH = 'rgba(255,255,255,0.8)';
-const RCT_WEBVIEW_REF = 'webview';
+var BGWASH = 'rgba(255,255,255,0.8)';
 
 const WebViewState = keyMirror({
   IDLE: null,
@@ -281,7 +279,7 @@ class WKWebView extends React.Component {
 
     const webView =
       <RCTWKWebView
-        ref={RCT_WEBVIEW_REF}
+        ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
@@ -387,7 +385,7 @@ class WKWebView extends React.Component {
    * Returns the native webview node.
    */
   getWebViewHandle = (): any => {
-    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.webview);
   };
 
   _onLoadingStart = (event: Event) => {
