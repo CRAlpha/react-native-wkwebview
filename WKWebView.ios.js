@@ -167,6 +167,10 @@ var WKWebView = createReactClass({
      */
     onMessage: PropTypes.func,
     /**
+     * Receive scroll events from view
+     */
+    onScroll: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -298,6 +302,7 @@ var WKWebView = createReactClass({
         onLoadingError={this._onLoadingError}
         onProgress={this._onProgress}
         onMessage={this._onMessage}
+        onScroll={this._onScroll}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
@@ -427,6 +432,11 @@ var WKWebView = createReactClass({
   _onMessage(event: Event) {
     var onMessage = this.props.onMessage;
     onMessage && onMessage(event.nativeEvent);
+  },
+
+  _onScroll(event: Event) {
+    var onScroll = this.props.onScroll;
+    onScroll && onScroll(event.nativeEvent);
   }
 });
 

@@ -33,6 +33,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
 
 @end
@@ -55,19 +56,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if(self = [self initWithFrame:CGRectZero])
   {
     super.backgroundColor = [UIColor clearColor];
-    
+
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
+
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     config.processPool = processPool;
     WKUserContentController* userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
-    
+
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    _webView.scrollView.delegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
@@ -284,6 +286,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
   }
   @catch (NSException * __unused exception) {}
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  NSDictionary *event = @{
+    @"contentOffset": @{
+      @"x": @(scrollView.contentOffset.x),
+      @"y": @(scrollView.contentOffset.y)
+    },
+    @"contentInset": @{
+      @"top": @(scrollView.contentInset.top),
+      @"left": @(scrollView.contentInset.left),
+      @"bottom": @(scrollView.contentInset.bottom),
+      @"right": @(scrollView.contentInset.right)
+    },
+    @"contentSize": @{
+      @"width": @(scrollView.contentSize.width),
+      @"height": @(scrollView.contentSize.height)
+    },
+    @"layoutMeasurement": @{
+      @"width": @(scrollView.frame.size.width),
+      @"height": @(scrollView.frame.size.height)
+    },
+    @"zoomScale": @(scrollView.zoomScale ?: 1),
+  };
+
+  _onScroll(event);
 }
 
 #pragma mark - WKNavigationDelegate methods
