@@ -43,9 +43,7 @@
     "url": "https://github.com/CRAlpha/react-native-wkwebview/issues"
   },
   "dependencies": {
-    "create-react-class": "^15.6.2",
-    "fbjs": "^0.8.3",
-    "prop-types": "^15.6.0"
+    "fbjs": "^0.8.3"
   },
   "description": "React Native WKWebView for iOS",
   "devDependencies": {},
@@ -63,7 +61,7 @@
   "name": "react-native-wkwebview-reborn",
   "optionalDependencies": {},
   "peerDependencies": {
-    "react-native": "*"
+    "prop-types": "^15.6.0"
   },
   "pre-push#master": [
     "lint"

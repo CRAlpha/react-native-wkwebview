@@ -2,7 +2,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import createReactClass from 'create-react-class';
 import ReactNative, {
   requireNativeComponent,
   EdgeInsetsPropType,
@@ -18,11 +17,11 @@ import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import invariant from 'fbjs/lib/invariant';
 import keyMirror from 'fbjs/lib/keyMirror';
-var WKWebViewManager = NativeModules.WKWebViewManager;
+const WKWebViewManager = NativeModules.WKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 
-var WebViewState = keyMirror({
+const WebViewState = keyMirror({
   IDLE: null,
   LOADING: null,
   ERROR: null,
@@ -47,12 +46,12 @@ type ErrorEvent = {
 
 type Event = Object;
 
-var defaultRenderLoading = () => (
+const defaultRenderLoading = () => (
   <View style={styles.loadingView}>
     <ActivityIndicator />
   </View>
 );
-var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
+const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   <View style={styles.errorContainer}>
     <Text style={styles.errorTextTitle}>
       Error loading page
@@ -73,12 +72,11 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * Renders a native WebView.
  */
 
-var WKWebView = createReactClass({
-  statics: {
-    JSNavigationScheme: JSNavigationScheme,
-    NavigationType: NavigationType,
-  },
-  propTypes: {
+class WKWebView extends React.Component {
+  static JSNavigationScheme = JSNavigationScheme;
+  static NavigationType = NavigationType;
+
+  static propTypes = {
     ...ViewPropTypes,
 
     html: deprecatedPropType(
@@ -220,28 +218,27 @@ var WKWebView = createReactClass({
      * A Boolean value that sets whether diagonal scrolling is allowed.
     */
     directionalLockEnabled: PropTypes.bool,
-  },
-  getInitialState() {
-    return {
-      viewState: WebViewState.IDLE,
-      lastErrorEvent: (null: ?ErrorEvent),
-      startInLoadingState: true,
-    };
-  },
+  };
 
-  componentWillMount: function() {
+  state = {
+    viewState: WebViewState.IDLE,
+    lastErrorEvent: (null: ?ErrorEvent),
+    startInLoadingState: true,
+  };
+
+  componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
-  },
+  }
 
   render() {
-    var otherView = null;
+    let otherView = null;
 
     if (this.state.viewState === WebViewState.LOADING) {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
-      var errorEvent = this.state.lastErrorEvent;
+      const errorEvent = this.state.lastErrorEvent;
       invariant(
         errorEvent != null,
         'lastErrorEvent expected to be non-null'
@@ -257,21 +254,22 @@ var WKWebView = createReactClass({
       );
     }
 
-    var webViewStyles = [styles.container, styles.webView, this.props.style];
+    const webViewStyles = [styles.container, styles.webView, this.props.style];
     if (this.state.viewState === WebViewState.LOADING ||
       this.state.viewState === WebViewState.ERROR) {
       // if we're in either LOADING or ERROR states, don't show the webView
       webViewStyles.push(styles.hidden);
     }
 
-    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
-      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+    const onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
+      const shouldStart = this.props.onShouldStartLoadWithRequest &&
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
+    let source = {};
     if (this.props.source && typeof this.props.source == 'object') {
-      var source = Object.assign({}, this.props.source, { 
+      source = Object.assign({}, this.props.source, { 
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
       });
@@ -283,7 +281,7 @@ var WKWebView = createReactClass({
       source.uri = this.props.url;
     }
 
-    var webView =
+    const webView =
       <RCTWKWebView
         ref={ref => { this.webview = ref; }}
         key="webViewKey"
@@ -314,96 +312,96 @@ var WKWebView = createReactClass({
         {otherView}
       </View>
     );
-  },
+  }
 
   /**
    * Go forward one page in the webview's history.
    */
-  goForward: function() {
+  goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goForward,
       null
     );
-  },
+  };
 
   /**
    * Go back one page in the webview's history.
    */
-  goBack: function() {
+  goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.goBack,
       null
     );
-  },
+  };
 
   /**
    * Indicating whether there is a back item in the back-forward list that can be navigated to
    */
-  canGoBack: function() {
+  canGoBack = () => {
     return WKWebViewManager.canGoBack(this.getWebViewHandle());
-  },
+  };
 
   /**
    * Indicating whether there is a forward item in the back-forward list that can be navigated to
    */
-  canGoForward: function() {
+  canGoForward = () => {
     return WKWebViewManager.canGoForward(this.getWebViewHandle());
-  },
+  };
 
   /**
    * Reloads the current page.
    */
-  reload: function() {
+  reload = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
       null
     );
-  },
+  };
 
   /**
    * Stop loading the current page.
    */
-  stopLoading: function() {
+  stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.stopLoading,
       null
     )
-  },
+  };
 
-  evaluateJavaScript: function(js) {
+  evaluateJavaScript = (js) => {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
-  },
+  };
 
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  _updateNavigationState: function(event: Event) {
+  _updateNavigationState = (event: Event) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
-  },
+  };
 
   /**
    * Returns the native webview node.
    */
-  getWebViewHandle: function(): any {
+  getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.webview);
-  },
+  };
 
-  _onLoadingStart: function(event: Event) {
-    var onLoadStart = this.props.onLoadStart;
+  _onLoadingStart = (event: Event) => {
+    const onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
-  },
+  };
 
-  _onLoadingError: function(event: Event) {
+  _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
-    var {onError, onLoadEnd} = this.props;
+    const {onError, onLoadEnd} = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
@@ -412,35 +410,35 @@ var WKWebView = createReactClass({
       lastErrorEvent: event.nativeEvent,
       viewState: WebViewState.ERROR
     });
-  },
+  };
 
-  _onLoadingFinish: function(event: Event) {
-    var {onLoad, onLoadEnd} = this.props;
+  _onLoadingFinish = (event: Event) => {
+    const {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
     this._updateNavigationState(event);
-  },
+  };
 
-  _onProgress(event: Event) {
-    var onProgress = this.props.onProgress;
+  _onProgress = (event: Event) => {
+    const onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
-  },
+  };
 
-  _onMessage(event: Event) {
-    var onMessage = this.props.onMessage;
+  _onMessage = (event: Event) => {
+    const onMessage = this.props.onMessage;
     onMessage && onMessage(event.nativeEvent);
-  },
+  };
 
-  _onScroll(event: Event) {
-    var onScroll = this.props.onScroll;
+  _onScroll = (event: Event) => {
+    const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
-  }
-});
+  };
+}
 
-var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
+const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
   nativeOnly: {
     onLoadingStart: true,
     onLoadingError: true,
@@ -448,7 +446,7 @@ var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
