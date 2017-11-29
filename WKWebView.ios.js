@@ -374,6 +374,16 @@ var WKWebView = createReactClass({
     )
   },
 
+  /**
+  * Take a screenshot of the webview
+  */
+  screenshot: function(options) {
+    return WKWebViewManager.screenshot(this.getWebViewHandle(), options || {});
+  },
+
+  /**
+   * Evaluate javascript
+   */
   evaluateJavaScript: function(js) {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   },
