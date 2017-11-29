@@ -192,6 +192,11 @@ var WKWebView = createReactClass({
      * @platform ios
      */
     onShouldStartLoadWithRequest: PropTypes.func,
+      /**
+     * Allows custom handling of response with MIME type
+     * @platform ios
+     */
+    onDidLoadWithResponse: PropTypes.func,
     /**
      * Copies cookies from sharedHTTPCookieStorage when calling loadRequest.
      * Set this to true to emulate behavior of WebView component.
@@ -270,6 +275,18 @@ var WKWebView = createReactClass({
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
+    var onDidLoadWithResponse =
+    this.props.onDidLoadWithResponse &&
+    ((event: Event) => {
+      var didLoad =
+        this.props.onDidLoadWithResponse &&
+        this.props.onDidLoadWithResponse(event.nativeEvent);
+      WKWebViewManager.didLoadWithResult(
+        !!didLoad,
+        event.nativeEvent.lockIdentifier
+      );
+    });
+
     if (this.props.source && typeof this.props.source == 'object') {
       var source = Object.assign({}, this.props.source, { 
         sendCookies: this.props.sendCookies,
@@ -304,6 +321,7 @@ var WKWebView = createReactClass({
         onMessage={this._onMessage}
         onScroll={this._onScroll}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onDidLoadWithResponse={onDidLoadWithResponse}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
       />;

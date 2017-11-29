@@ -15,8 +15,10 @@
 
 @implementation RCTWKWebViewManager
 {
-  NSConditionLock *_shouldStartLoadLock;
-  BOOL _shouldStartLoad;
+    NSConditionLock *_shouldStartLoadLock;
+    NSConditionLock *_didLoadLock;
+    BOOL _shouldStartLoad;
+    BOOL _didLoad;
 }
 
 RCT_EXPORT_MODULE()
@@ -42,6 +44,7 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onDidLoadWithResponse, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
@@ -142,7 +145,7 @@ RCT_EXPORT_METHOD(evaluateJavaScript:(nonnull NSNumber *)reactTag
 
 - (BOOL)webView:(__unused RCTWKWebView *)webView
 shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
-   withCallback:(RCTDirectEventBlock)callback
+   withCallback:(RCTDirectEventBlock)callback;
 {
   _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
   _shouldStartLoad = YES;
@@ -171,5 +174,38 @@ RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)loc
                "got %zd, expected %zd", lockIdentifier, _shouldStartLoadLock.condition);
   }
 }
+
+- (BOOL)webView:(__unused RCTWKWebView *)webView
+didLoadWithResponse:(NSMutableDictionary<NSString *, id> *)response
+   withCallback:(RCTDirectEventBlock)callback;
+{
+    _didLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
+    _didLoad = YES;
+    response[@"lockIdentifier"] = @(_didLoadLock.condition);
+    callback(response);
+    
+    // Block the main thread for a maximum of 250ms until the JS thread returns
+    if ([_didLoadLock lockWhenCondition:0 beforeDate:[NSDate dateWithTimeIntervalSinceNow:.25]]) {
+        BOOL returnValue = _didLoad;
+        [_didLoadLock unlock];
+        _didLoadLock = nil;
+        return returnValue;
+    } else {
+        RCTLogWarn(@"Did not receive response to didLoad in time, defaulting to YES");
+        return YES;
+    }
+}
+
+RCT_EXPORT_METHOD(didLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)lockIdentifier)
+{
+    if ([_didLoadLock tryLockWhenCondition:lockIdentifier]) {
+        _didLoad = result;
+        [_didLoadLock unlockWithCondition:0];
+    } else {
+        RCTLogWarn(@"didLoadWithResult invoked with invalid lockIdentifier: "
+                   "got %zd, expected %zd", lockIdentifier, _didLoadLock.condition);
+    }
+}
+
 
 @end
