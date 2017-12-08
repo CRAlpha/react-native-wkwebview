@@ -1,6 +1,7 @@
 #import "RCTWKWebView.h"
 
-#import <WebKit/WebKit.h>
+#import "WeakScriptMessageDelegate.h"
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
@@ -11,6 +12,19 @@
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
+#import <objc/runtime.h>
+
+// runtime trick to remove WKWebView keyboard default toolbar
+// see: http://stackoverflow.com/questions/19033292/ios-7-uiwebview-keyboard-issue/19042279#19042279
+@interface _SwizzleHelperWK : NSObject @end
+@implementation _SwizzleHelperWK
+-(id)inputAccessoryView
+{
+  return nil;
+}
+@end
+
+
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -19,6 +33,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
 
 @end
@@ -31,27 +46,35 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:frame])) {
+  return self = [super initWithFrame:frame];
+}
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (instancetype)initWithProcessPool:(WKProcessPool *)processPool
+{
+  if(self = [self initWithFrame:CGRectZero])
+  {
     super.backgroundColor = [UIColor clearColor];
-    
+
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
+
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    config.processPool = processPool;
     WKUserContentController* userController = [[WKUserContentController alloc]init];
-    [userController addScriptMessageHandler:self name:@"reactNative"];
+    [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
-    
+
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    _webView.scrollView.delegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
   return self;
 }
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)loadRequest:(NSURLRequest *)request
 {
@@ -66,6 +89,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   
   [_webView loadRequest:request];
 }
+
+-(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
+{
+  if (!hideKeyboardAccessoryView) {
+    return;
+  }
+
+  UIView* subview;
+  for (UIView* view in _webView.scrollView.subviews) {
+    if([[view.class description] hasPrefix:@"WKContent"])
+      subview = view;
+  }
+
+  if(subview == nil) return;
+
+  NSString* name = [NSString stringWithFormat:@"%@_SwizzleHelperWK", subview.class.superclass];
+  Class newClass = NSClassFromString(name);
+
+  if(newClass == nil)
+  {
+    newClass = objc_allocateClassPair(subview.class, [name cStringUsingEncoding:NSASCIIStringEncoding], 0);
+    if(!newClass) return;
+
+    Method method = class_getInstanceMethod([_SwizzleHelperWK class], @selector(inputAccessoryView));
+      class_addMethod(newClass, @selector(inputAccessoryView), method_getImplementation(method), method_getTypeEncoding(method));
+
+    objc_registerClassPair(newClass);
+  }
+
+  object_setClass(subview, newClass);
+}
+
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
@@ -105,6 +160,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)goBack
 {
   [_webView goBack];
+}
+
+- (BOOL)canGoBack
+{
+  return [_webView canGoBack];
+}
+
+- (BOOL)canGoForward
+{
+  return [_webView canGoForward];
 }
 
 - (void)reload
@@ -240,15 +305,52 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   @catch (NSException * __unused exception) {}
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  NSDictionary *event = @{
+    @"contentOffset": @{
+      @"x": @(scrollView.contentOffset.x),
+      @"y": @(scrollView.contentOffset.y)
+    },
+    @"contentInset": @{
+      @"top": @(scrollView.contentInset.top),
+      @"left": @(scrollView.contentInset.left),
+      @"bottom": @(scrollView.contentInset.bottom),
+      @"right": @(scrollView.contentInset.right)
+    },
+    @"contentSize": @{
+      @"width": @(scrollView.contentSize.width),
+      @"height": @(scrollView.contentSize.height)
+    },
+    @"layoutMeasurement": @{
+      @"width": @(scrollView.frame.size.width),
+      @"height": @(scrollView.frame.size.height)
+    },
+    @"zoomScale": @(scrollView.zoomScale ?: 1),
+  };
+
+  _onScroll(event);
+}
+
 #pragma mark - WKNavigationDelegate methods
 
 - (void)webView:(__unused WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+  UIApplication *app = [UIApplication sharedApplication];
   NSURLRequest *request = navigationAction.request;
   NSURL* url = request.URL;
   NSString* scheme = url.scheme;
   
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
+
+  // handle mailto and tel schemes
+  if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"]) {
+    if ([app canOpenURL:url]) {
+      [app openURL:url];
+      decisionHandler(WKNavigationActionPolicyCancel);
+      return;
+    }
+  }
   
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {

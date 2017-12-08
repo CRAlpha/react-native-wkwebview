@@ -1,3 +1,5 @@
+#import <WebKit/WebKit.h>
+
 #import <React/RCTView.h>
 
 @class RCTWKWebView;
@@ -20,7 +22,16 @@ extern NSString *const RCTJSNavigationScheme;
 
 @interface RCTWKWebView : RCTView
 
-@property(nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
+- (instancetype)initWithProcessPool:(WKProcessPool *)processPool;
+
+@property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
+
+@property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL openNewWindowInWebView;
+@property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 
 @property(nonatomic, copy) NSDictionary *source;
 @property(nonatomic, assign) UIEdgeInsets contentInset;
@@ -30,6 +41,8 @@ extern NSString *const RCTJSNavigationScheme;
 
 - (void)goForward;
 - (void)goBack;
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
 - (void)reload;
 - (void)stopLoading;
 - (void)evaluateJavaScript:(NSString *)javaScriptString
