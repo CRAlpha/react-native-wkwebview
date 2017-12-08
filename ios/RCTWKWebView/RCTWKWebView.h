@@ -33,12 +33,6 @@ extern NSString *const RCTJSNavigationScheme;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 
-@property(nonatomic, copy) NSDictionary *source;
-@property(nonatomic, assign) UIEdgeInsets contentInset;
-@property(nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-@property(nonatomic, assign) BOOL openNewWindowInWebView;
-@property(nonatomic, copy) NSString *injectedJavaScript;
-
 - (void)goForward;
 - (void)goBack;
 - (BOOL)canGoBack;
