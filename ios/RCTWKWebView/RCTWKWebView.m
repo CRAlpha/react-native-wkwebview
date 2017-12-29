@@ -76,6 +76,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+  if (!scrollView.scrollEnabled)
+    scrollView.bounds = _webView.bounds;
+}
+
 - (void)loadRequest:(NSURLRequest *)request
 {
   if (request.URL && _sendCookies) {
