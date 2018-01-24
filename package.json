@@ -61,7 +61,7 @@
   "name": "react-native-wkwebview-reborn",
   "optionalDependencies": {},
   "peerDependencies": {
-    "react-native": "*"
+    "prop-types": "^15.6.0"
   },
   "pre-push#master": [
     "lint"
@@ -75,5 +75,5 @@
   "scripts": {
     "lint": "eslint --ext .js --ext .jsx ."
   },
-  "version": "1.8.0"
+  "version": "1.9.0"
 }
