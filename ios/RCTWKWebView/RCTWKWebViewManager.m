@@ -46,6 +46,10 @@ RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
+if (@available(iOS 9, *))
+{
+  RCT_REMAP_VIEW_PROPERTY(allowsLinkPreview, _webView.allowsLinkPreview, BOOL)
+}
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {

@@ -70,7 +70,11 @@ Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous 
 
 - **hideKeyboardAccessoryView**
 
-This will hide the keyboard accesory view (`<` `>` and `Done`). Default is false.
+This will hide the keyboard accessory view (`<` `>` and `Done`). Default is false.
+
+- **allowsLinkPreview**
+
+A Boolean value that determines whether pressing on a link displays a preview of the destination for the link. This props is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; before that, the default value is false.
 
 #### Communication from WKWebview to React Native
 
