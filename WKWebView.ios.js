@@ -389,6 +389,24 @@ class WKWebView extends React.Component {
     )
   };
 
+  /**
+   * Posts a message to the web view, which will emit a `message` event.
+   * Accepts one argument, `data`, which must be a string.
+   *
+   * In your webview, you'll need to something like the following.
+   *
+   * ```js
+   * document.addEventListener('message', e => { document.title = e.data; });
+   * ```
+   */
+  postMessage = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWKWebView.Commands.postMessage,
+      [String(data)]
+    );
+  };
+
   evaluateJavaScript = (js) => {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   };
