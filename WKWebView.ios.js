@@ -11,8 +11,7 @@ import ReactNative, {
   ViewPropTypes,
   NativeModules,
   Text,
-  ActivityIndicator,
-  ViewPropTypes
+  ActivityIndicator
 } from 'react-native';
 
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
@@ -295,7 +294,6 @@ class WKWebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
-    var webView =
     const webView =
       <RCTWKWebView
         ref={ref => { this.webview = ref; }}
