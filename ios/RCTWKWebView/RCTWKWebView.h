@@ -15,8 +15,8 @@ extern NSString *const RCTJSNavigationScheme;
 @protocol RCTWKWebViewDelegate <NSObject>
 
 - (BOOL)webView:(RCTWKWebView *)webView
-shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
-   withCallback:(RCTDirectEventBlock)callback;
+    shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
+                 withCallback:(RCTDirectEventBlock)callback;
 
 @end
 
@@ -33,13 +33,14 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 
-
 - (void)goForward;
 - (void)goBack;
 - (BOOL)canGoBack;
 - (BOOL)canGoForward;
 - (void)reload;
 - (void)stopLoading;
-- (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;
-
+- (void)evaluateJavaScript:(NSString *)javaScriptString
+         completionHandler:(void (^)(id, NSError *error))completionHandler;
+-(void)removeData:(NSArray *)types
+         completionHandler:(void (^)(id, NSError *error))completionHandler;
 @end

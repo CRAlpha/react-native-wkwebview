@@ -381,6 +381,10 @@ class WKWebView extends React.Component {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   };
 
+  removeData = (types) => {
+    return WKWebViewManager.removeData(this.getWebViewHandle(), types)
+  };
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -488,3 +492,15 @@ const styles = StyleSheet.create({
 });
 
 export default WKWebView;
+
+const WebsiteDataTypes = {
+  DiskCache: 'WKWebsiteDataTypeDiskCache',
+  OfflineWebApplicationCache: 'WKWebsiteDataTypeOfflineWebApplicationCache',
+  MemoryCache: 'WKWebsiteDataTypeMemoryCache',
+  LocalStorage: 'WKWebsiteDataTypeLocalStorage',
+  Cookies: 'WKWebsiteDataTypeCookies',
+  SessionStorage: 'WKWebsiteDataTypeSessionStorage',
+  IndexedDBDatabases: 'WKWebsiteDataTypeIndexedDBDatabases',
+  WebSQLDatabases: 'WKWebsiteDataTypeWebSQLDatabases',
+}
+export { WebsiteDataTypes }
