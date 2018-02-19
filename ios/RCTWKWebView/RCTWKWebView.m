@@ -24,8 +24,6 @@
 }
 @end
 
-static NSString *const kPostMessageHost = @"postMessage";
-
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -381,23 +379,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
-  if (isJSNavigation && [request.URL.host isEqualToString:kPostMessageHost]) {
-    NSString *data = request.URL.query;
-    data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
-      @"data": data,
-    }];
-
-    NSString *source = @"document.dispatchEvent(new MessageEvent('message:received'));";
-
-    [_webView evaluateJavaScript:source completionHandler:nil];
-
-    _onMessage(event);
-  }
-
   if (isJSNavigation) {
     decisionHandler(WKNavigationActionPolicyCancel);
   }
@@ -430,39 +411,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
   if (_messagingEnabled) {
-    #if RCT_DEV
-    // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-    [webView evaluateJavaScript:testPostMessageNative completionHandler:^(id result, NSError *error) {
-      if (!result) {
-        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-      }
-    }];
-    #endif
-    NSString *source = [NSString stringWithFormat:
-      @"(function() {"
-        "window.originalPostMessage = window.postMessage;"
-
-        "var messageQueue = [];"
-        "var messagePending = false;"
-
-        "function processQueue() {"
-          "if (!messageQueue.length || messagePending) return;"
-          "messagePending = true;"
-          "window.location = '%@://%@?' + encodeURIComponent(messageQueue.shift());"
-        "}"
-
-        "window.postMessage = function(data) {"
-          "messageQueue.push(String(data));"
-          "processQueue();"
-        "};"
-
-        "document.addEventListener('message:received', function(e) {"
-          "messagePending = false;"
-          "processQueue();"
-        "});"
-      "})();", RCTJSNavigationScheme, kPostMessageHost
-    ];
+    NSString *source = @"window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
     [webView evaluateJavaScript:source completionHandler:nil];
   }
   if (_injectedJavaScript != nil) {

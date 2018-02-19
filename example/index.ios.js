@@ -8,23 +8,20 @@ import {
 import WkWebView from 'react-native-wkwebview-reborn';
 
 export default class example extends Component {
-  componentWillMount() {
-
-  }
   render() {
     return (
       <View style={{ flex: 1, marginTop: 20 }}>
         <WkWebView style={{ backgroundColor: '#ff0000' }}
           userAgent="MyFancyWebView"
           hideKeyboardAccessoryView={false}
-          ref="webview"
+          ref={(c) => this.webview = c}
           sendCookies={true}
           source={{ uri: 'https://httpbin.org/get' }}
           onMessage={(e) => console.log(e.nativeEvent)}
-          evaluateJavaScript={'setTimeout(() => { window.postMessage("hi", "*") }, 1000)'}
-        />
-        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.refs.webview.reload()}>Reload</Text>
-
+          injectedJavaScript="document.addEventListener('message', e => { alert(e.data); });"
+    />
+        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.reload()}>Reload</Text>
+        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.postMessage("MyMessage")}>Post Message</Text>
       </View>
     );
   }
