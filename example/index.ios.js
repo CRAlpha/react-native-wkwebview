@@ -24,6 +24,7 @@ export default class example extends Component {
           evaluateJavaScript={'setTimeout(() => { window.postMessage("hi", "*") }, 1000)'}
         />
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.refs.webview.reload()}>Reload</Text>
+
       </View>
     );
   }
