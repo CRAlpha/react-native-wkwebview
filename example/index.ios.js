@@ -18,10 +18,10 @@ export default class example extends Component {
           sendCookies={true}
           source={{ uri: 'https://httpbin.org/get' }}
           onMessage={(e) => console.log(e.nativeEvent)}
-          injectedJavaScript="document.addEventListener('message', e => { alert(e.data); });"
+          injectedJavaScript="window.postMessage('Hello from JavaScript'); document.addEventListener('message', e => { alert(e.data); });"
     />
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.reload()}>Reload</Text>
-        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.postMessage("MyMessage")}>Post Message</Text>
+        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.postMessage("Hello from React Native")}>Post Message</Text>
       </View>
     );
   }
