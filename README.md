@@ -35,7 +35,7 @@ If your React Native < 0.40, please user **0.x.x** versions.
 
 WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
 
-**Since 1.13.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. For advanced or customized usage, please refer to "Advacned Communication between React Native and WkWebView" below.**
+**Since 1.13.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. For advanced or customized usage, please refer to [Advacned Communication between React Native and WkWebView(#advacned-communication-between-react-native-and-wkwebview).**
 
 #### Additional props:
 
