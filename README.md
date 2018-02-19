@@ -35,7 +35,7 @@ If your React Native < 0.40, please user **0.x.x** versions.
 
 WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
 
-**Since 1.13.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. For advanced or customized usage, please refer to [Advacned Communication between React Native and WkWebView](#advacned-communication-between-react-native-and-wkwebview).**
+**Since 1.13.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. You can refer to the React Native documentation or the `example` project. For advanced or customized usage, please refer to [Advacned Communication between React Native and WkWebView](#advacned-communication-between-react-native-and-wkwebview).**
 
 #### Additional props:
 
@@ -127,6 +127,12 @@ Then in your webview, you can post message to React Native using
 
 ```
 window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
+```
+
+or (since 1.30.0)
+
+```
+window..postMessage({data: 'hello!'});
 ```
 
 Then your React Native should have
