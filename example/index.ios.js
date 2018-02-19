@@ -17,10 +17,14 @@ export default class example extends Component {
         <WkWebView style={{ backgroundColor: '#ff0000' }}
           userAgent="MyFancyWebView"
           hideKeyboardAccessoryView={false}
-          ref={c => this._webview = c}
+          ref="webview"
           sendCookies={true}
-          source={{ uri: 'https://httpbin.org/get' }} />
-        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this._webview.reload()}>Reload</Text>
+          source={{ uri: 'https://httpbin.org/get' }}
+          onMessage={(e) => console.log(e.nativeEvent)}
+          evaluateJavaScript={'setTimeout(() => { window.postMessage("hi", "*") }, 1000)'}
+        />
+        <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.refs.webview.reload()}>Reload</Text>
+
       </View>
     );
   }
