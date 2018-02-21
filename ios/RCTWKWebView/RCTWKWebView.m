@@ -411,7 +411,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
   if (_messagingEnabled) {
-    NSString *source = @"window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
+    #if RCT_DEV
+        // See isNative in lodash
+        NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+    
+        [webView evaluateJavaScript:testPostMessageNative completionHandler:^(id result, NSError *error) {
+          if (!result) {
+            RCTLogWarn(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+          }
+        }];
+    #endif
+    NSString *source = [NSString stringWithFormat:
+                        @"window.originalPostMessage = window.postMessage;"
+                        "window.postMessage = function() {"
+                        "return window.webkit.messageHandlers.reactNative.postMessage.apply(window.webkit.messageHandlers.reactNative, arguments);"
+                        "};"
+                        ];
+    
     [webView evaluateJavaScript:source completionHandler:nil];
   }
   if (_injectedJavaScript != nil) {
