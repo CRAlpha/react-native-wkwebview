@@ -29,6 +29,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSDictionary *source;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, assign) BOOL openNewWindowInWebView;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
@@ -36,8 +37,11 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 
 - (void)goForward;
 - (void)goBack;
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
 - (void)reload;
 - (void)stopLoading;
+- (void)postMessage:(NSString *)message;
 - (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;
 
 @end

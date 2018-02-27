@@ -16,14 +16,13 @@
 
 // runtime trick to remove WKWebView keyboard default toolbar
 // see: http://stackoverflow.com/questions/19033292/ios-7-uiwebview-keyboard-issue/19042279#19042279
-@interface _SwizzleHelper : NSObject @end
-@implementation _SwizzleHelper
+@interface _SwizzleHelperWK : NSObject @end
+@implementation _SwizzleHelperWK
 -(id)inputAccessoryView
 {
   return nil;
 }
 @end
-
 
 @interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate>
 
@@ -33,6 +32,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
 
 @end
@@ -55,19 +55,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if(self = [self initWithFrame:CGRectZero])
   {
     super.backgroundColor = [UIColor clearColor];
-    
+
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
+
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     config.processPool = processPool;
     WKUserContentController* userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
-    
+
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    _webView.scrollView.delegate = self;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
@@ -84,7 +85,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       request = mutableRequest;
     }
   }
-  
+
   [_webView loadRequest:request];
 }
 
@@ -102,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if(subview == nil) return;
 
-  NSString* name = [NSString stringWithFormat:@"%@_SwizzleHelper", subview.class.superclass];
+  NSString* name = [NSString stringWithFormat:@"%@_SwizzleHelperWK", subview.class.superclass];
   Class newClass = NSClassFromString(name);
 
   if(newClass == nil)
@@ -110,7 +111,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     newClass = objc_allocateClassPair(subview.class, [name cStringUsingEncoding:NSASCIIStringEncoding], 0);
     if(!newClass) return;
 
-    Method method = class_getInstanceMethod([_SwizzleHelper class], @selector(inputAccessoryView));
+    Method method = class_getInstanceMethod([_SwizzleHelperWK class], @selector(inputAccessoryView));
       class_addMethod(newClass, @selector(inputAccessoryView), method_getImplementation(method), method_getTypeEncoding(method));
 
     objc_registerClassPair(newClass);
@@ -123,7 +124,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
   if (_onMessage) {
-    _onMessage(@{@"name":message.name, @"body": message.body});
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"data": message.body,
+      @"name": message.name
+    }];
+    _onMessage(event);
   }
 }
 
@@ -138,9 +144,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView evaluateJavaScript:javaScriptString completionHandler:completionHandler];
 }
 
+- (void)postMessage:(NSString *)message
+{
+  NSDictionary *eventInitDict = @{
+                                  @"data": message,
+                                  };
+  NSString *source = [NSString
+                      stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+                      RCTJSONStringify(eventInitDict, NULL)
+                      ];
+  [_webView evaluateJavaScript:source completionHandler:nil];
+}
+
+
 - (void)goBack
 {
   [_webView goBack];
+}
+
+- (BOOL)canGoBack
+{
+  return [_webView canGoBack];
+}
+
+- (BOOL)canGoForward
+{
+  return [_webView canGoForward];
 }
 
 - (void)reload
@@ -173,14 +202,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     // Only works for iOS 9+. So iOS 8 will simply ignore those two values
     NSString *file = [RCTConvert NSString:source[@"file"]];
     NSString *allowingReadAccessToURL = [RCTConvert NSString:source[@"allowingReadAccessToURL"]];
-    
+
     if (file && [_webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
       NSURL *fileURL = [RCTConvert NSURL:file];
       NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
       [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
       return;
     }
-    
+
     // Check for a static html source first
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {
@@ -191,7 +220,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [_webView loadHTMLString:html baseURL:baseURL];
       return;
     }
-    
+
     NSURLRequest *request = [RCTConvert NSURLRequest:source];
     // Because of the way React works, as pages redirect, we actually end up
     // passing the redirect urls back here, so we ignore them if trying to load
@@ -244,7 +273,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                                                                  @"canGoBack": @(_webView.canGoBack),
                                                                                                  @"canGoForward" : @(_webView.canGoForward),
                                                                                                  }];
-  
+
   return event;
 }
 
@@ -276,16 +305,53 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   @catch (NSException * __unused exception) {}
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  NSDictionary *event = @{
+    @"contentOffset": @{
+      @"x": @(scrollView.contentOffset.x),
+      @"y": @(scrollView.contentOffset.y)
+    },
+    @"contentInset": @{
+      @"top": @(scrollView.contentInset.top),
+      @"left": @(scrollView.contentInset.left),
+      @"bottom": @(scrollView.contentInset.bottom),
+      @"right": @(scrollView.contentInset.right)
+    },
+    @"contentSize": @{
+      @"width": @(scrollView.contentSize.width),
+      @"height": @(scrollView.contentSize.height)
+    },
+    @"layoutMeasurement": @{
+      @"width": @(scrollView.frame.size.width),
+      @"height": @(scrollView.frame.size.height)
+    },
+    @"zoomScale": @(scrollView.zoomScale ?: 1),
+  };
+
+  _onScroll(event);
+}
+
 #pragma mark - WKNavigationDelegate methods
 
 - (void)webView:(__unused WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+  UIApplication *app = [UIApplication sharedApplication];
   NSURLRequest *request = navigationAction.request;
   NSURL* url = request.URL;
   NSString* scheme = url.scheme;
-  
+
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
-  
+
+  // handle mailto and tel schemes
+  if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"]) {
+    if ([app canOpenURL:url]) {
+      [app openURL:url];
+      decisionHandler(WKNavigationActionPolicyCancel);
+      return;
+    }
+  }
+
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
@@ -299,7 +365,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return decisionHandler(WKNavigationActionPolicyCancel);
     }
   }
-  
+
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
     BOOL isTopFrame = [url isEqual:request.mainDocumentURL];
@@ -312,7 +378,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _onLoadingStart(event);
     }
   }
-  
+
   if (isJSNavigation) {
     decisionHandler(WKNavigationActionPolicyCancel);
   }
@@ -344,7 +410,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
       return;
     }
-    
+
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary:@{
                                       @"domain": error.domain,
@@ -357,6 +423,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
+  if (_messagingEnabled) {
+    #if RCT_DEV
+        // See isNative in lodash
+        NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+    
+        [webView evaluateJavaScript:testPostMessageNative completionHandler:^(id result, NSError *error) {
+          if (!result) {
+            RCTLogWarn(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+          }
+        }];
+    #endif
+    NSString *source = [NSString stringWithFormat:
+                        @"window.originalPostMessage = window.postMessage;"
+                        "window.postMessage = function() {"
+                        "return window.webkit.messageHandlers.reactNative.postMessage.apply(window.webkit.messageHandlers.reactNative, arguments);"
+                        "};"
+                        ];
+    
+    [webView evaluateJavaScript:source completionHandler:nil];
+  }
   if (_injectedJavaScript != nil) {
     [webView evaluateJavaScript:_injectedJavaScript completionHandler:^(id result, NSError *error) {
       NSMutableDictionary<NSString *, id> *event = [self baseEvent];
@@ -374,7 +460,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
-  
+
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Close", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     completionHandler();
   }]];
@@ -383,7 +469,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler {
-  
+
   // TODO We have to think message to confirm "YES"
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -397,17 +483,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler {
-  
+
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:prompt message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
     textField.text = defaultText;
   }];
-  
+
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     NSString *input = ((UITextField *)alertController.textFields.firstObject).text;
     completionHandler(input);
   }]];
-  
+
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     completionHandler(nil);
   }]];
@@ -428,6 +514,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
   return nil;
+}
+
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
+{
+  RCTLogWarn(@"Webview Process Terminated");
 }
 
 @end

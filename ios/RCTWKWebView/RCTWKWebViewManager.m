@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
+#import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
 
@@ -16,24 +17,13 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
-  WKProcessPool *_processPool;
-}
-
-- (id)init {
-  self = [super init];
-  
-  if (self) {
-    _processPool = [[WKProcessPool alloc] init];
-  }
-  
-  return self;
 }
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:_processPool];
+  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[[WKProcessPool alloc] init]];
   webView.delegate = self;
   return webView;
 }
@@ -42,6 +32,7 @@ RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(allowsBackForwardNavigationGestures, _webView.allowsBackForwardNavigationGestures, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(openNewWindowInWebView, BOOL)
@@ -53,7 +44,13 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
+RCT_REMAP_VIEW_PROPERTY(allowsLinkPreview, _webView.allowsLinkPreview, BOOL)
+#endif
+
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
@@ -79,6 +76,28 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
   }];
 }
 
+RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoBack]]);
+  }];
+}
+
+RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    
+    resolve([NSNumber numberWithBool:[view canGoForward]]);
+  }];
+}
+
 RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
@@ -101,6 +120,18 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
       [view stopLoading];
     }
   }];
+}
+
+RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)message)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+        RCTWKWebView *view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[RCTWKWebView class]]) {
+            RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+        } else {
+            [view postMessage:message];
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(evaluateJavaScript:(nonnull NSNumber *)reactTag
