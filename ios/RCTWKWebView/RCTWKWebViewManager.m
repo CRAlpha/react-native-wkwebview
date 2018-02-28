@@ -34,6 +34,9 @@ RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(allowsBackForwardNavigationGestures, _webView.allowsBackForwardNavigationGestures, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectJavaScriptForMainFrameOnly, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectedJavaScriptForMainFrameOnly, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(openNewWindowInWebView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
@@ -82,7 +85,7 @@ RCT_EXPORT_METHOD(canGoBack:(nonnull NSNumber *)reactTag
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
-    
+
     resolve([NSNumber numberWithBool:[view canGoBack]]);
   }];
 }
@@ -93,7 +96,7 @@ RCT_EXPORT_METHOD(canGoForward:(nonnull NSNumber *)reactTag
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
     RCTWKWebView *view = viewRegistry[reactTag];
-    
+
     resolve([NSNumber numberWithBool:[view canGoForward]]);
   }];
 }

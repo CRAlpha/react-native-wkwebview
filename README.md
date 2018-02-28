@@ -83,6 +83,7 @@ A Boolean value that determines whether pressing on a link displays a preview of
 - automaticallyAdjustContentInsets
 - contentInset
 - html (deprecated)
+- injectJavaScript
 - injectedJavaScript
 - onError
 - onLoad
