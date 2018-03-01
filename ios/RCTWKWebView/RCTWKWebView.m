@@ -174,13 +174,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)reload
 {
-  NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
-  if (request.URL && !_webView.URL.absoluteString.length) {
-    [self loadRequest:request];
-  }
-  else {
-    [_webView reload];
-  }
+  [_webView reload];
 }
 
 - (void)stopLoading
@@ -299,10 +293,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
-  @try {
-    [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
-  }
-  @catch (NSException * __unused exception) {}
+  [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
+  _webView.navigationDelegate = nil;
+  _webView.UIDelegate = nil;
+  _webView.scrollView.delegate = nil;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
