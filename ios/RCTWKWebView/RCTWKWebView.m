@@ -41,6 +41,9 @@
 {
   WKWebView *_webView;
   NSString *_injectedJavaScript;
+  WKProcessPool *_processPool;
+  BOOL _allowsInlineMediaPlayback;
+  BOOL _requiresUserActionForMediaPlayback;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -56,34 +59,67 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   {
     super.backgroundColor = [UIColor clearColor];
     
+    _processPool = processPool;
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
+    _allowsInlineMediaPlayback = NO;
+    _requiresUserActionForMediaPlayback = YES;
     
-    WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
-    config.processPool = processPool;
-    WKUserContentController* userController = [[WKUserContentController alloc]init];
-    [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
-    config.userContentController = userController;
+    [self addWebView];
     
-    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
-    _webView.UIDelegate = self;
-    _webView.navigationDelegate = self;
-    _webView.scrollView.delegate = self;
-    
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
-    // We set the default behavior to "never" so that iOS
-    // doesn't do weird things to UIScrollView insets automatically
-    // and keeps it as an opt-in behavior.
-    if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
-#endif
-    
-    [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
-    [self addSubview:_webView];
   }
   return self;
+}
+
+- (void)addWebView
+{
+  WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+  config.processPool = _processPool;
+  
+  WKUserContentController* userController = [[WKUserContentController alloc]init];
+  [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
+  config.userContentController = userController;
+  
+  config.allowsInlineMediaPlayback = _allowsInlineMediaPlayback;
+  if(_requiresUserActionForMediaPlayback){
+    if( [config respondsToSelector:@selector(mediaTypesRequiringUserActionForPlayback)]) {
+      config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
+    } else if ( [config respondsToSelector:@selector(requiresUserActionForMediaPlayback)]) {
+      config.requiresUserActionForMediaPlayback = YES;
+    } else if ( [config respondsToSelector:@selector(mediaPlaybackRequiresUserAction)]) {
+      config.mediaPlaybackRequiresUserAction = YES;
+    }
+  } else {
+    if( [config respondsToSelector:@selector(mediaTypesRequiringUserActionForPlayback)]) {
+      config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+    } else if ( [config respondsToSelector:@selector(requiresUserActionForMediaPlayback)]) {
+      config.requiresUserActionForMediaPlayback = NO;
+    } else if ( [config respondsToSelector:@selector(mediaPlaybackRequiresUserAction)]) {
+      config.mediaPlaybackRequiresUserAction = NO;
+    }
+  }
+
+  if( _webView ){
+    [self removeWebView];
+  }
+
+  _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
+  _webView.UIDelegate = self;
+  _webView.navigationDelegate = self;
+  _webView.scrollView.delegate = self;
+  
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+  // `contentInsetAdjustmentBehavior` is only available since iOS 11.
+  // We set the default behavior to "never" so that iOS
+  // doesn't do weird things to UIScrollView insets automatically
+  // and keeps it as an opt-in behavior.
+  if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+    _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  }
+#endif
+  
+  [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
+  [self addSubview:_webView];
 }
 
 - (void)loadRequest:(NSURLRequest *)request
@@ -105,6 +141,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if ([_webView respondsToSelector:@selector(allowsLinkPreview)]) {
     _webView.allowsLinkPreview = allowsLinkPreview;
   }
+}
+
+-(void)setAllowsInlineMediaPlayback:(BOOL)allowsInlineMediaPlayback
+{
+  _allowsInlineMediaPlayback = allowsInlineMediaPlayback;
+  [self removeReactSubview:_webView];
+  [self addWebView];
+}
+
+-(void)setRequiresUserActionForMediaPlayback:(BOOL)requiresUserActionForMediaPlayback
+{
+  _requiresUserActionForMediaPlayback = requiresUserActionForMediaPlayback;
+  [self removeReactSubview:_webView];
+  [self addWebView];
 }
 
 -(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
@@ -322,10 +372,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dealloc
 {
+  [self removeWebView];
+}
+
+- (void)removeWebView
+{
   [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
   _webView.navigationDelegate = nil;
   _webView.UIDelegate = nil;
   _webView.scrollView.delegate = nil;
+  [self removeReactSubview:_webView];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

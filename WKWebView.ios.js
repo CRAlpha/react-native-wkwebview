@@ -192,6 +192,8 @@ class WKWebView extends React.Component {
      */
     bounces: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
+    allowsInlineMediaPlayback: PropTypes.bool,
+    requiresUserActionForMediaPlayback: PropTypes.bool,
     allowsBackForwardNavigationGestures: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -316,6 +318,8 @@ class WKWebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
+        allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
+        requiresUserActionForMediaPlayback={this.props.requiresUserActionForMediaPlayback}
         contentInset={this.props.contentInset}
         allowsBackForwardNavigationGestures={this.props.allowsBackForwardNavigationGestures}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
