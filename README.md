@@ -2,28 +2,28 @@
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
 
-React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. **Deployment Target >= iOS 8.0 is required (which is React Native's current minimum deployment target anyway).**
+React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. 
+
+**Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
 
 ### Install
 
-**Alternative #1**
+1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
+2. run `react-native link react-native-wkwebview-reborn`
+
+**Manual alternative**
 
 1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
-3. Go to node_modules ➜ react-native-wkwebview ➜ ios ➜ select RCTWKWebView.xcodeproj
-4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select libRCTWkWebView.a (see the following screenshot for reference)
+3. Go to node_modules ➜ react-native-wkwebview ➜ ios ➜ select `RCTWKWebView.xcodeproj`
+4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (see the following screenshot for reference)
 ![Linking](https://user-images.githubusercontent.com/608221/28060167-0650e3f4-6659-11e7-8085-7a8c2615f90f.png)
 5. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
-
-**Alternative #2**
-
-1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
-2. run `rnpm link`
 
 
 ### Usage
 
-```
+```js
 import WKWebView from 'react-native-wkwebview-reborn';
 ```
 
@@ -35,7 +35,7 @@ If your React Native < 0.40, please use **0.x.x** versions.
 
 WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy UIWebView properties are not supported.
 
-**Since 1.14.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. You can refer to the React Native documentation or the `example` project. For advanced or customized usage, please refer to [Advacned Communication between React Native and WkWebView](#advacned-communication-between-react-native-and-wkwebview).**
+**Since 1.14.0, WkWebView supports `onMessage` and `postMessage` as in the default WebView. You can refer to the React Native documentation or the `example` project. For advanced or customized usage, please refer to [Advanced Communication between React Native and WkWebView](#advanced-communication-between-react-native-and-wkwebview).**
 
 #### Additional props:
 
@@ -43,7 +43,7 @@ WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy U
 
 A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
 
-```
+```js
 <WKWebView onProgress={(progress) => console.log(progress)} />
 ```
 
@@ -62,7 +62,7 @@ Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when ca
 This allows WKWebView loads a local HTML file. Please note the underlying API is only introduced in iOS 9+. So in iOS 8, it will simple ignores these two properties.
 It allows you to provide a fallback URL for iOS 8 users.
 
-```
+```js
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
 ```
 
@@ -114,7 +114,7 @@ This property specifies how the safe area insets are used to modify the content 
 - allowsInlineMediaPlayback
 - decelerationRate
 
-### Advacned Communication between React Native and WkWebView
+### Advanced Communication between React Native and WkWebView
 
 
 #### Communication from WKWebview to React Native
@@ -123,25 +123,25 @@ This property specifies how the safe area insets are used to modify the content 
 
 This utilizes the message handlers in WKWebView and allows you to post message from webview to React Native. For example:
 
-```
+```js
 <WKWebView onMessage={(e) => console.log(e)} />
 ```
 
 Then in your webview, you can post message to React Native using
 
-```
+```js
 window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
 ```
 
 or (since 1.14.0)
 
-```
+```js
 window..postMessage({data: 'hello!'});
 ```
 
 Then your React Native should have
 
-```
+```js
 {name: 'reactNative', body: {data: 'hello!'}}
 ```
 
@@ -158,7 +158,7 @@ So I recommend to keep your data simple and JSON-friendly.
 There is a `evaluateJavaScript` method on WKWebView, which does exactly what its name suggests. To send message from React Native to WebView,
 you can define a callback method on your WebView:
 
-```
+```js
 window.receivedMessageFromReactNative = function(data) {
   // Code here
   console.log(data);
@@ -167,7 +167,7 @@ window.receivedMessageFromReactNative = function(data) {
 
 Then you can send message from React Native with this method call:
 
-```
+```js
 // <WKWebView ref={ref => { this.webview = ref; }} />
 this.webview.evaluateJavaScript('receivedMessageFromReactNative("Hello from the other side.")');
 ```
