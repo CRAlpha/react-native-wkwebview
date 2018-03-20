@@ -130,19 +130,24 @@ This utilizes the message handlers in WKWebView and allows you to post message f
 Then in your webview, you can post message to React Native using
 
 ```js
-window.webkit.messageHandlers.reactNative.postMessage({data: 'hello!'});
+window.webkit.messageHandlers.reactNative.postMessage({message: 'hello!'});
 ```
 
 or (since 1.14.0)
 
 ```js
-window..postMessage({data: 'hello!'});
+window.postMessage({message: 'hello!'});
 ```
 
-Then your React Native should have
+Then you can access the nativeEvent in React Native using the event object returned
 
 ```js
-{name: 'reactNative', body: {data: 'hello!'}}
+e.nativeEvent => {
+  name: 'reactNative',
+  data: {
+    message: 'hello!'
+  }
+}
 ```
 
 The data serialization flow is as follows:
