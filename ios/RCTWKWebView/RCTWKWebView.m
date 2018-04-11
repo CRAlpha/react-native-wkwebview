@@ -444,13 +444,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       }
     }];
 #endif
-    NSString *source = [NSString stringWithFormat:
-                        @"window.originalPostMessage = window.postMessage;"
-                        "window.postMessage = function() {"
-                        "return window.webkit.messageHandlers.reactNative.postMessage.apply(window.webkit.messageHandlers.reactNative, arguments);"
-                        "};"
-                        ];
-    
+    NSString *source = @"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
     [webView evaluateJavaScript:source completionHandler:nil];
   }
   if (_injectedJavaScript != nil) {
