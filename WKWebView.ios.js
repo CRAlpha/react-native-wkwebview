@@ -8,11 +8,12 @@ import ReactNative, {
   StyleSheet,
   UIManager,
   View,
+  ViewPropTypes,
   NativeModules,
   Text,
-  ActivityIndicator,
-  ViewPropTypes
+  ActivityIndicator
 } from 'react-native';
+
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import invariant from 'fbjs/lib/invariant';
@@ -133,6 +134,18 @@ class WKWebView extends React.Component {
     ]),
 
     /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     */
+    contentInsetAdjustmentBehavior: PropTypes.oneOf([
+      'automatic',
+      'scrollableAxes',
+      'never', // default
+      'always',
+    ]),
+
+    /**
      * Function that returns a view to show if there's an error.
      */
     renderError: PropTypes.func, // view to show if there's an error
@@ -161,7 +174,13 @@ class WKWebView extends React.Component {
      */
     onProgress: PropTypes.func,
     /**
-     * Receive message from webpage
+     * A function that is invoked when the webview calls `window.postMessage`.
+     * Setting this property will inject a `postMessage` global into your
+     * webview, but will still call pre-existing values of `postMessage`.
+     *
+     * `window.postMessage` accepts one argument, `data`, which will be
+     * available on the event object, `event.nativeEvent.data`. `data`
+     * must be a string.
      */
     onMessage: PropTypes.func,
     /**
@@ -206,6 +225,10 @@ class WKWebView extends React.Component {
      */
     hideKeyboardAccessoryView: PropTypes.bool,
     /**
+     * A Boolean value that determines whether pressing on a link displays a preview of the destination for the link. This props is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; before that, the default value is false.
+     */
+    allowsLinkPreview: PropTypes.bool,
+    /**
      * Sets the customized user agent by using of the WKWebView
     */
     customUserAgent: PropTypes.string,
@@ -228,7 +251,7 @@ class WKWebView extends React.Component {
 
   componentWillMount() {
     if (this.props.startInLoadingState) {
-      this.setState({viewState: WebViewState.LOADING});
+      this.setState({ viewState: WebViewState.LOADING });
     }
   }
 
@@ -269,7 +292,7 @@ class WKWebView extends React.Component {
 
     let source = {};
     if (this.props.source && typeof this.props.source == 'object') {
-      source = Object.assign({}, this.props.source, { 
+      source = Object.assign({}, this.props.source, {
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
       });
@@ -281,11 +304,14 @@ class WKWebView extends React.Component {
       source.uri = this.props.url;
     }
 
+    const messagingEnabled = typeof this.props.onMessage === 'function';
+
     const webView =
       <RCTWKWebView
         ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
+        contentInsetAdjustmentBehavior={this.props.contentInsetAdjustmentBehavior}
         source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
@@ -295,9 +321,11 @@ class WKWebView extends React.Component {
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
         hideKeyboardAccessoryView={this.props.hideKeyboardAccessoryView}
+        allowsLinkPreview={this.props.allowsLinkPreview}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        messagingEnabled={messagingEnabled}
         onProgress={this._onProgress}
         onMessage={this._onMessage}
         onScroll={this._onScroll}
@@ -372,6 +400,24 @@ class WKWebView extends React.Component {
     )
   };
 
+  /**
+   * Posts a message to the web view, which will emit a `message` event.
+   * Accepts one argument, `data`, which must be a string.
+   *
+   * In your webview, you'll need to something like the following.
+   *
+   * ```js
+   * document.addEventListener('message', e => { document.title = e.data; });
+   * ```
+   */
+  postMessage = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWKWebView.Commands.postMessage,
+      [String(data)]
+    );
+  };
+
   evaluateJavaScript = (js) => {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   };
@@ -401,7 +447,7 @@ class WKWebView extends React.Component {
 
   _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
-    const {onError, onLoadEnd} = this.props;
+    const { onError, onLoadEnd } = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
@@ -413,7 +459,7 @@ class WKWebView extends React.Component {
   };
 
   _onLoadingFinish = (event: Event) => {
-    const {onLoad, onLoadEnd} = this.props;
+    const { onLoad, onLoadEnd } = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
@@ -428,8 +474,8 @@ class WKWebView extends React.Component {
   };
 
   _onMessage = (event: Event) => {
-    const onMessage = this.props.onMessage;
-    onMessage && onMessage(event.nativeEvent);
+    var { onMessage } = this.props;
+    onMessage && onMessage(event);
   };
 
   _onScroll = (event: Event) => {
@@ -443,6 +489,8 @@ const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onMessage: true,
+    messagingEnabled: PropTypes.bool,
   }
 });
 
