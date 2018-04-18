@@ -7,8 +7,9 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"react": "16.0.0-alpha.6",
-		"react-native": "0.44.1",
+		"react": "16.2.0",
+		"react-native": "0.53.2",
+		"prop-types": "15.6.0",
 		"react-native-wkwebview-reborn": "file:../"
 	},
 	"devDependencies": {
