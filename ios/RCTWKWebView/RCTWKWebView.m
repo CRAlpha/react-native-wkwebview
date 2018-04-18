@@ -330,32 +330,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  if (!scrollView.scrollEnabled)
+  if (!scrollView.scrollEnabled) {
     scrollView.bounds = _webView.bounds;
-  else {
-    NSDictionary *event = @{
-                          @"contentOffset": @{
-                              @"x": @(scrollView.contentOffset.x),
-                              @"y": @(scrollView.contentOffset.y)
-                              },
-                          @"contentInset": @{
-                              @"top": @(scrollView.contentInset.top),
-                              @"left": @(scrollView.contentInset.left),
-                              @"bottom": @(scrollView.contentInset.bottom),
-                              @"right": @(scrollView.contentInset.right)
-                              },
-                          @"contentSize": @{
-                              @"width": @(scrollView.contentSize.width),
-                              @"height": @(scrollView.contentSize.height)
-                              },
-                          @"layoutMeasurement": @{
-                              @"width": @(scrollView.frame.size.width),
-                              @"height": @(scrollView.frame.size.height)
-                              },
-                          @"zoomScale": @(scrollView.zoomScale ?: 1),
-                          };
-    _onScroll(event);
+    return;
   }
+  NSDictionary *event = @{
+                        @"contentOffset": @{
+                            @"x": @(scrollView.contentOffset.x),
+                            @"y": @(scrollView.contentOffset.y)
+                            },
+                        @"contentInset": @{
+                            @"top": @(scrollView.contentInset.top),
+                            @"left": @(scrollView.contentInset.left),
+                            @"bottom": @(scrollView.contentInset.bottom),
+                            @"right": @(scrollView.contentInset.right)
+                            },
+                        @"contentSize": @{
+                            @"width": @(scrollView.contentSize.width),
+                            @"height": @(scrollView.contentSize.height)
+                            },
+                        @"layoutMeasurement": @{
+                            @"width": @(scrollView.frame.size.width),
+                            @"height": @(scrollView.frame.size.height)
+                            },
+                        @"zoomScale": @(scrollView.zoomScale ?: 1),
+                        };
+  _onScroll(event);
 }
 
 #pragma mark - WKNavigationDelegate methods
