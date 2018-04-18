@@ -86,11 +86,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-  if (!scrollView.scrollEnabled)
-    scrollView.bounds = _webView.bounds;
-}
-
 - (void)loadRequest:(NSURLRequest *)request
 {
   if (request.URL && _sendCookies) {
@@ -335,7 +330,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  NSDictionary *event = @{
+  if (!scrollView.scrollEnabled)
+    scrollView.bounds = _webView.bounds;
+  else {
+    NSDictionary *event = @{
                           @"contentOffset": @{
                               @"x": @(scrollView.contentOffset.x),
                               @"y": @(scrollView.contentOffset.y)
@@ -356,8 +354,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                               },
                           @"zoomScale": @(scrollView.zoomScale ?: 1),
                           };
-  
-  _onScroll(event);
+    _onScroll(event);
+  }
 }
 
 #pragma mark - WKNavigationDelegate methods
