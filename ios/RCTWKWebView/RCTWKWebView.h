@@ -34,6 +34,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL openNewWindowInWebView;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
+@property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction;
 
 
 - (void)goForward;
