@@ -327,32 +327,42 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  if (!scrollView.scrollEnabled) {
+    scrollView.bounds = _webView.bounds;
+    return;
+  }
   NSDictionary *event = @{
-                          @"contentOffset": @{
-                              @"x": @(scrollView.contentOffset.x),
-                              @"y": @(scrollView.contentOffset.y)
-                              },
-                          @"contentInset": @{
-                              @"top": @(scrollView.contentInset.top),
-                              @"left": @(scrollView.contentInset.left),
-                              @"bottom": @(scrollView.contentInset.bottom),
-                              @"right": @(scrollView.contentInset.right)
-                              },
-                          @"contentSize": @{
-                              @"width": @(scrollView.contentSize.width),
-                              @"height": @(scrollView.contentSize.height)
-                              },
-                          @"layoutMeasurement": @{
-                              @"width": @(scrollView.frame.size.width),
-                              @"height": @(scrollView.frame.size.height)
-                              },
-                          @"zoomScale": @(scrollView.zoomScale ?: 1),
-                          };
-  
+                        @"contentOffset": @{
+                            @"x": @(scrollView.contentOffset.x),
+                            @"y": @(scrollView.contentOffset.y)
+                            },
+                        @"contentInset": @{
+                            @"top": @(scrollView.contentInset.top),
+                            @"left": @(scrollView.contentInset.left),
+                            @"bottom": @(scrollView.contentInset.bottom),
+                            @"right": @(scrollView.contentInset.right)
+                            },
+                        @"contentSize": @{
+                            @"width": @(scrollView.contentSize.width),
+                            @"height": @(scrollView.contentSize.height)
+                            },
+                        @"layoutMeasurement": @{
+                            @"width": @(scrollView.frame.size.width),
+                            @"height": @(scrollView.frame.size.height)
+                            },
+                        @"zoomScale": @(scrollView.zoomScale ?: 1),
+                        };
   _onScroll(event);
 }
 
 #pragma mark - WKNavigationDelegate methods
+
+#if DEBUG
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposit        ion, NSURLCredential * _Nullable))completionHandler {
+    NSURLCredential * credential = [[NSURLCredential alloc] initWithTrust:[challenge protectionSpace].serverTrust];
+    completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+}
+#endif
 
 - (void)webView:(__unused WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
@@ -441,13 +451,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       }
     }];
 #endif
-    NSString *source = [NSString stringWithFormat:
-                        @"window.originalPostMessage = window.postMessage;"
-                        "window.postMessage = function() {"
-                        "return window.webkit.messageHandlers.reactNative.postMessage.apply(window.webkit.messageHandlers.reactNative, arguments);"
-                        "};"
-                        ];
-    
+    NSString *source = @"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
     [webView evaluateJavaScript:source completionHandler:nil];
   }
   if (_injectedJavaScript != nil) {

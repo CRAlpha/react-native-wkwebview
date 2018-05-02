@@ -1,6 +1,7 @@
 #import "RCTWKWebViewManager.h"
 
 #import "RCTWKWebView.h"
+#import "WKProcessPool+SharedProcessPool.h"
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
