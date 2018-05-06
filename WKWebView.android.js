@@ -1,6 +1,6 @@
 'use strict';
 
-import ReactNative, {
+import {
   WebView,
 } from 'react-native';
 
