@@ -25,6 +25,8 @@ RCT_EXPORT_MODULE()
 {
   RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[[WKProcessPool alloc] init]];
   webView.delegate = self;
+
+  [RCTWKWebView allowDisplayingKeyboardWithoutUserAction];
   return webView;
 }
 

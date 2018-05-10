@@ -23,6 +23,7 @@ extern NSString *const RCTJSNavigationScheme;
 @interface RCTWKWebView : RCTView
 
 - (instancetype)initWithProcessPool:(WKProcessPool *)processPool;
++ (void)allowDisplayingKeyboardWithoutUserAction;
 
 @property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 
