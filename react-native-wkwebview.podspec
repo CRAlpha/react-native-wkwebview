@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.license      = "MIT"
   s.ios.deployment_target = "8.0"
-  s.osx.deployment_target = "10.12"
+  s.osx.deployment_target = "10.10"
 
   s.source       = { :git => "https://github.com/CRAlpha/react-native-wkwebview.git", :tag => "v#{s.version}" }
 
