@@ -20,7 +20,7 @@
   "_phantomChildren": {},
   "_requested": {
     "raw": "react-native-wkwebview-reborn@file:../",
-    "scope": null,
+    "scope": "@october",
     "escapedName": "react-native-wkwebview-reborn",
     "name": "react-native-wkwebview-reborn",
     "rawSpec": "file:../",
@@ -58,7 +58,7 @@
   ],
   "license": "MIT",
   "main": "index.js",
-  "name": "react-native-wkwebview-reborn",
+  "name": "@october/react-native-wkwebview-reborn",
   "optionalDependencies": {},
   "peerDependencies": {
     "prop-types": "^15.6.0"
@@ -70,12 +70,12 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/craigblagg/react-native-wkwebview.git"
+    "url": "git+https://github.com/CRAlpha/react-native-wkwebview.git"
   },
   "scripts": {
     "lint": "eslint --ext .js --ext .jsx .",
     "sync-from-example": "cp ./example/node_modules/react-native-wkwebview-reborn/*.js ./;cp -r ./example/node_modules/react-native-wkwebview-reborn/ios ./",
     "sync-to-example": "cp ./*.js ./example/node_modules/react-native-wkwebview-reborn/;cp -r ./ios ./example/node_modules/react-native-wkwebview-reborn/"
   },
-  "version": "1.20.0"
+  "version": "1.0.0"
 }

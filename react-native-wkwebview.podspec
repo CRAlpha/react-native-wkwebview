@@ -8,12 +8,12 @@ Pod::Spec.new do |s|
   s.summary      = "React Native WKWebView for iOS"
   s.author       = "Ruoyu Sun <ruoysun@gmail.com> (https://github.com/insraq)"
 
-  s.homepage     = "https://github.com/craigblagg/react-native-wkwebview"
+  s.homepage     = "https://github.com/CRAlpha/react-native-wkwebview"
 
   s.license      = "MIT"
   s.platform     = :ios, "8.0"
 
-  s.source       = { :git => "https://github.com/craigblagg/react-native-wkwebview.git", :tag => "v#{s.version}" }
+  s.source       = { :git => "https://github.com/CRAlpha/react-native-wkwebview.git", :tag => "v#{s.version}" }
 
   s.source_files  = "ios/RCTWKWebView/*.{h,m}"
 
