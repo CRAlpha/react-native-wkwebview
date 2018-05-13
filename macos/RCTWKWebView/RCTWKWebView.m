@@ -494,6 +494,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #pragma mark - WKUIDelegate
 
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  [alert addButtonWithTitle:@"Close"];
+  [alert setMessageText:@"JavaScript error"];
+  [alert setInformativeText:message];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+    if(returnCode == NSAlertFirstButtonReturn) completionHandler();
+  }];
+  
 //  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
 //
 //  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Close", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -504,6 +514,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  [alert addButtonWithTitle:@"OK"]; // first
+  [alert addButtonWithTitle:@"Cancel"]; // second
+  [alert setMessageText:@"JavaScript confirmation"];
+  [alert setInformativeText:message];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+    if(returnCode == NSAlertFirstButtonReturn){
+      completionHandler(YES);
+    } else if(returnCode == NSAlertSecondButtonReturn){
+      completionHandler(NO);
+    }
+  }];
   
 //  // TODO We have to think message to confirm "YES"
 //  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -518,6 +542,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  [alert addButtonWithTitle:@"OK"];
+  [alert addButtonWithTitle:@"Cancel"];
+  [alert setMessageText:prompt];
+  [alert setAlertStyle:NSAlertStyleWarning];
+  
+  NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+  [input setStringValue:defaultText];
+  [alert setAccessoryView:input];
+  
+  [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+    if(returnCode == NSAlertFirstButtonReturn){
+      NSString *userInput = [input stringValue];
+      completionHandler(userInput);
+    } else if(returnCode == NSAlertSecondButtonReturn){
+      completionHandler(nil);
+    }
+  }];
   
 //  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:prompt message:nil preferredStyle:UIAlertControllerStyleAlert];
 //  [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {

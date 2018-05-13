@@ -2,23 +2,24 @@
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
 
-React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. 
+React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8.0 and macOS 10.10 with all the performance boosts. 
 
 **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
+**Deployment Target >= macOS 10.10 is required**.
 
 ### Install
 
-1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
-2. run `react-native link react-native-wkwebview-reborn`
+1. Install from npm (note the postfix in the package name): `yarn add https://github.com/shirakaba/react-native-wkwebview.git#macos`
+2. run `react-native link react-native-wkwebview-reborn` (WARNING: untested for macOS!)
 
 **Manual alternative**
 
-1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
+1. Install from npm (note the postfix in the package name): `yarn add https://github.com/shirakaba/react-native-wkwebview.git#macos`
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
-3. Go to node_modules ➜ react-native-wkwebview-reborn ➜ ios ➜ select `RCTWKWebView.xcodeproj`
-4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (see the following screenshot for reference)
+3. Go to node_modules ➜ react-native-wkwebview-reborn ➜ ios (or macos) ➜ select `RCTWKWebView.xcodeproj`
+4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (or `libRCTWkWebView-macos.a`) (see the following screenshot for reference)
 ![Linking](https://user-images.githubusercontent.com/608221/28060167-0650e3f4-6659-11e7-8085-7a8c2615f90f.png)
-5. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
+5. Compile and profit (Remember to set `Minimum Deployment Target` to 8.0 for iOS, or 10.10 for macOS)
 
 
 ### Usage
@@ -113,6 +114,18 @@ This property specifies how the safe area insets are used to modify the content 
 - javaScriptEnabled
 - allowsInlineMediaPlayback
 - decelerationRate
+
+#### Incomplete APIs for macOS
+
+Some iOS methods have not been fully implemented on macOS yet. This is because the macOS implementation of `WKWebView` has some differences, such as lacking a `scrollView`, using `AppKit` instead of `UIKit`, and lacking any equivalent to `UIAlertController`; and so I don't quite know what should be done in the macOS case. I therefore can't guarantee the success of the following methods:
+
+- `setHideKeyboardAccessoryView`
+- `setContentInset`
+- `setBackgroundColor`
+- `refreshContentInset`
+- `scrollViewDidScroll`
+
+`mailto` and `tel` schemes are also not supported yet because I don't know the macOS equivalent.
 
 ### Advanced Communication between React Native and WkWebView
 
