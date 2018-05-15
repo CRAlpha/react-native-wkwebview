@@ -27,19 +27,40 @@ RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
 
 @end
 
+@implementation RCTConvert (WKWebViewConfiguration)
+
++ (WKWebViewConfiguration *)WKWebViewConfiguration:(id)json
+{
+  NSDictionary<NSString *, id> *options = [RCTConvert NSDictionary:json];
+  WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+  config.allowsInlineMediaPlayback = [RCTConvert BOOL:options[@"allowsInlineMediaPlayback"]];
+  config.mediaPlaybackRequiresUserAction = [RCTConvert BOOL:options[@"mediaPlaybackRequiresUserAction"]];;
+  return config;
+}
+
+@end
+
 @implementation RCTWKWebViewManager
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
+  WKWebViewConfiguration *_config;
 }
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[WKProcessPool sharedProcessPool]];
+  WKWebViewConfiguration *config = !!_config ? [_config copy] : [[WKWebViewConfiguration alloc] init];
+  config.processPool = [[WKProcessPool alloc] init];
+  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithConfig:config];
   webView.delegate = self;
   return webView;
+}
+
+RCT_EXPORT_METHOD(setConfiguration:(WKWebViewConfiguration *)config)
+{
+  _config = config;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
