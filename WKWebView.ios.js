@@ -382,6 +382,7 @@ class WKWebView extends React.Component {
    * Reloads the current page.
    */
   reload = () => {
+    this.setState({ viewState: WebViewState.LOADING });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
