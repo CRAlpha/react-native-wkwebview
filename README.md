@@ -10,7 +10,7 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 ### Install
 
 1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
-2. run `react-native link react-native-wkwebview-reborn` (beware: automatic linking is untested for macOS!)
+2. run `react-native link react-native-wkwebview-reborn`
 
 **Manual alternative**
 
