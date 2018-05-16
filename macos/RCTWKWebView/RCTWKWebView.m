@@ -3,7 +3,6 @@
 #import "WeakScriptMessageDelegate.h"
 
 #import <AppKit/AppKit.h>
-// #import <UIKit/UIKit.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTConvert.h>
@@ -12,8 +11,6 @@
 #import <React/RCTUtils.h>
 #import <React/RCTView.h>
 #import <React/NSView+React.h>
-// #import "NSView+React.h"
-// #import <React/UIView+React.h>
 
 #import <objc/runtime.h>
 
@@ -76,17 +73,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
-    // _webView.scrollView.delegate = self;
-    
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
-    // We set the default behavior to "never" so that iOS
-    // doesn't do weird things to UIScrollView insets automatically
-    // and keeps it as an opt-in behavior.
-    if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
-#endif
+
+/* Removed because macOS WKWebView doesn't have a scrollView */
+//    _webView.scrollView.delegate = self;
+//
+//#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+//    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
+//    // We set the default behavior to "never" so that iOS
+//    // doesn't do weird things to UIScrollView insets automatically
+//    // and keeps it as an opt-in behavior.
+//    if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+//      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+//    }
+//#endif
     
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
@@ -121,6 +120,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return;
   }
   
+/* Removed because macOS WKWebView doesn't have a scrollView */
 //  UIView* subview;
 //  for (UIView* view in _webView.scrollView.subviews) {
 //    if([[view.class description] hasPrefix:@"WKContent"])
@@ -269,28 +269,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+/* My understanding of AppKit's equivalent to UIKit's layoutSubviews() */
 - (void)layout
 {
   [super layout];
   _webView.frame = self.bounds;
 }
 
-//- (void)layoutSubviews
-//{
-//  [super layoutSubviews];
-//  _webView.frame = self.bounds;
-//}
-//
-//- (void)resizeSubviewsWithOldSize
-//{
-//  [super resizeSubviewsWithOldSize]
-//  print(self.bounds);
-//  _webView.frame = self.bounds;
-//}
-
 - (void)setContentInset:(NSEdgeInsets)contentInset
 {
   _contentInset = contentInset;
+/* Removed because macOS WKWebView doesn't have a scrollView */
 //  [RCTView autoAdjustInsetsForView:self
 //                    withScrollView:_webView.scrollView
 //                      updateOffset:NO];
@@ -299,10 +288,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setBackgroundColor:(NSColor *)backgroundColor
 {
   CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
+/* Removed because macOS WKWebView doesn't have a scrollView */
 //  self.opaque = _webView.opaque = _webView.scrollView.opaque = (alpha == 1.0);
 //  _webView.backgroundColor = _webView.scrollView.backgroundColor = backgroundColor;
 }
 
+/* Removed because macOS WKWebView doesn't have a backgroundColor */
 //- (NSColor *)backgroundColor
 //{
 //  return _webView.backgroundColor;
@@ -323,6 +314,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)refreshContentInset
 {
+/* Removed because macOS WKWebView doesn't have a scrollView */
 //  [RCTView autoAdjustInsetsForView:self
 //                    withScrollView:_webView.scrollView
 //                      updateOffset:YES];
@@ -346,9 +338,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
   _webView.navigationDelegate = nil;
   _webView.UIDelegate = nil;
+  /* Removed because macOS WKWebView doesn't have a scrollView */
 //  _webView.scrollView.delegate = nil;
 }
 
+/* Removed because macOS WKWebView doesn't have a scrollView */
 //- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 //{
 //  if (!scrollView.scrollEnabled) {
@@ -397,7 +391,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
   
-//  // handle mailto and tel schemes
+//  TODO: handle mailto and tel schemes
 //  if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"]) {
 //    if ([app canOpenURL:url]) {
 //      [app openURL:url];
@@ -503,17 +497,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
     if(returnCode == NSAlertFirstButtonReturn) completionHandler();
   }];
-  
-//  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
-//
-//  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Close", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-//    completionHandler();
-//  }]];
-//  UIViewController *presentingController = RCTPresentedViewController();
-//  [presentingController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler {
+  // TODO We have to think message to confirm "YES"
   NSAlert *alert = [[NSAlert alloc] init];
   [alert setAlertStyle:NSAlertStyleWarning];
   [alert addButtonWithTitle:@"OK"]; // first
@@ -528,17 +515,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       completionHandler(NO);
     }
   }];
-  
-//  // TODO We have to think message to confirm "YES"
-//  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
-//  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-//    completionHandler(YES);
-//  }]];
-//  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-//    completionHandler(NO);
-//  }]];
-//  UIViewController *presentingController = RCTPresentedViewController();
-//  [presentingController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler {
@@ -561,22 +537,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       completionHandler(nil);
     }
   }];
-  
-//  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:prompt message:nil preferredStyle:UIAlertControllerStyleAlert];
-//  [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-//    textField.text = defaultText;
-//  }];
-//
-//  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-//    NSString *input = ((UITextField *)alertController.textFields.firstObject).text;
-//    completionHandler(input);
-//  }]];
-//
-//  [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-//    completionHandler(nil);
-//  }]];
-//  UIViewController *presentingController = RCTPresentedViewController();
-//  [presentingController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
@@ -587,6 +547,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   } else {
     NSApplication *app = [NSApplication sharedApplication];
     NSURL *url = navigationAction.request.URL;
+    // TODO:
 //    if ([app canOpenURL:url]) {
 //      [app openURL:url];
 //    }

@@ -5,21 +5,21 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
-// #import <React/UIView+React.h>
 #import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
 
 @implementation RCTConvert (UIScrollView)
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
-                                                                  @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
-                                                                  @"scrollableAxes": @(UIScrollViewContentInsetAdjustmentScrollableAxes),
-                                                                  @"never": @(UIScrollViewContentInsetAdjustmentNever),
-                                                                  @"always": @(UIScrollViewContentInsetAdjustmentAlways),
-                                                                  }), UIScrollViewContentInsetAdjustmentNever, integerValue)
-#endif
+/* Removed because macOS WKWebView doesn't have a scrollView */
+//#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+//RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
+//                                                                  @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
+//                                                                  @"scrollableAxes": @(UIScrollViewContentInsetAdjustmentScrollableAxes),
+//                                                                  @"never": @(UIScrollViewContentInsetAdjustmentNever),
+//                                                                  @"always": @(UIScrollViewContentInsetAdjustmentAlways),
+//                                                                  }), UIScrollViewContentInsetAdjustmentNever, integerValue)
+//#endif
 
 @end
 
@@ -43,10 +43,11 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
-RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
-RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
-RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
-RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
+/* Removed because macOS WKWebView doesn't have a scrollView */
+//RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
+//RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
+//RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+//RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(allowsBackForwardNavigationGestures, _webView.allowsBackForwardNavigationGestures, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(openNewWindowInWebView, BOOL)
@@ -62,9 +63,10 @@ RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsLinkPreview, BOOL)
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
-#endif
+/* Removed because macOS WKWebView doesn't have a scrollView */
+//#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+//RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
+//#endif
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
