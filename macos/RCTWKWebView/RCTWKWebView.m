@@ -34,12 +34,17 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
+@property (nonatomic, strong) WKUserScript * atStartScript;
+@property (nonatomic, strong) WKUserScript * atEndScript;
 
 @end
 
 @implementation RCTWKWebView
 {
   WKWebView *_webView;
+  BOOL _injectJavaScriptForMainFrameOnly;
+  BOOL _injectedJavaScriptForMainFrameOnly;
+  NSString *_injectJavaScript;
   NSString *_injectedJavaScript;
 }
 
@@ -91,6 +96,46 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [self addSubview:_webView];
   }
   return self;
+}
+
+- (void)setInjectJavaScript:(NSString *)injectJavaScript {
+  _injectJavaScript = injectJavaScript;
+  self.atStartScript = [[WKUserScript alloc] initWithSource:injectJavaScript
+                                              injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                           forMainFrameOnly:_injectJavaScriptForMainFrameOnly];
+  [self resetupScripts];
+}
+
+- (void)setInjectedJavaScript:(NSString *)script {
+  _injectedJavaScript = script;
+  self.atEndScript = [[WKUserScript alloc] initWithSource:script
+                                            injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                         forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
+  [self resetupScripts];
+}
+
+- (void)setInjectedJavaScriptForMainFrameOnly:(BOOL)injectedJavaScriptForMainFrameOnly {
+  _injectedJavaScriptForMainFrameOnly = injectedJavaScriptForMainFrameOnly;
+  if (_injectedJavaScript != nil) {
+    [self setInjectedJavaScript:_injectedJavaScript];
+  }
+}
+
+- (void)setInjectJavaScriptForMainFrameOnly:(BOOL)injectJavaScriptForMainFrameOnly {
+  _injectJavaScriptForMainFrameOnly = injectJavaScriptForMainFrameOnly;
+  if (_injectJavaScript != nil) {
+    [self setInjectJavaScript:_injectJavaScript];
+  }
+}
+
+- (void)resetupScripts {
+  [_webView.configuration.userContentController removeAllUserScripts];
+  if (self.atStartScript) {
+    [_webView.configuration.userContentController addUserScript:self.atStartScript];
+  }
+  if (self.atEndScript) {
+    [_webView.configuration.userContentController addUserScript:self.atEndScript];
+  }
 }
 
 - (void)loadRequest:(NSURLRequest *)request
@@ -472,15 +517,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSString *source = @"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
     [webView evaluateJavaScript:source completionHandler:nil];
   }
-  if (_injectedJavaScript != nil) {
-    [webView evaluateJavaScript:_injectedJavaScript completionHandler:^(id result, NSError *error) {
-      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-      event[@"jsEvaluationValue"] = [NSString stringWithFormat:@"%@", result];
-      _onLoadingFinish(event);
-    }];
-  }
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
-  else if (_onLoadingFinish && !webView.loading && ![webView.URL.absoluteString isEqualToString:@"about:blank"]) {
+  if (_onLoadingFinish && !webView.loading && ![webView.URL.absoluteString isEqualToString:@"about:blank"]) {
     _onLoadingFinish([self baseEvent]);
   }
 }
