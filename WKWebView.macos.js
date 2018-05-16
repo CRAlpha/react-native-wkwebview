@@ -188,7 +188,7 @@ class WKWebView extends React.Component {
      */
     onScroll: PropTypes.func,
     /**
-     * @platform ios
+     * @platform macos
      */
     bounces: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
@@ -220,7 +220,7 @@ class WKWebView extends React.Component {
     /**
      * Allows custom handling of any webview requests by a JS handler. Return true
      * or false from this method to continue loading the request.
-     * @platform ios
+     * @platform macos
      */
     onShouldStartLoadWithRequest: PropTypes.func,
     /**
