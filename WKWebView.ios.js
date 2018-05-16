@@ -200,6 +200,20 @@ class WKWebView extends React.Component {
     startInLoadingState: PropTypes.bool,
     style: ViewPropTypes.style,
     /**
+     * If false injectJavaScript will run both main frame and iframe
+     * @platform ios
+     */
+    injectJavaScriptForMainFrameOnly: PropTypes.bool,
+    /**
+     * If false injectedJavaScript will run both main frame and iframe
+     * @platform ios
+     */
+    injectedJavaScriptForMainFrameOnly: PropTypes.bool,
+    /**
+     * Function that accepts a string that will be passed to the WebView and executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.string,
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
@@ -313,6 +327,9 @@ class WKWebView extends React.Component {
         style={webViewStyles}
         contentInsetAdjustmentBehavior={this.props.contentInsetAdjustmentBehavior}
         source={resolveAssetSource(source)}
+        injectJavaScriptForMainFrameOnly={this.props.injectJavaScriptForMainFrameOnly}
+        injectedJavaScriptForMainFrameOnly={this.props.injectedJavaScriptForMainFrameOnly}
+        injectJavaScript={this.props.injectJavaScript}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
