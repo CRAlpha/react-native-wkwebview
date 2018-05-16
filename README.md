@@ -4,20 +4,20 @@
 
 React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8.0 and macOS 10.10 with all the performance boosts. 
 
-**Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
-**Deployment Target >= macOS 10.10 is required**.
+* **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway)* when deploying to iOS.
+* **Deployment Target >= macOS 10.10 is required** when deploying to macOS.
 
 ### Install
 
-1. Install from npm (note the postfix in the package name): `yarn add https://github.com/shirakaba/react-native-wkwebview.git#macos`
-2. run `react-native link react-native-wkwebview-reborn` (WARNING: untested for macOS!)
+1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
+2. run `react-native link react-native-wkwebview-reborn` (beware: automatic linking is untested for macOS!)
 
 **Manual alternative**
 
-1. Install from npm (note the postfix in the package name): `yarn add https://github.com/shirakaba/react-native-wkwebview.git#macos`
+1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
 3. Go to node_modules ➜ react-native-wkwebview-reborn ➜ ios (or macos) ➜ select `RCTWKWebView.xcodeproj`
-4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (or `libRCTWkWebView-macos.a`) (see the following screenshot for reference)
+4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (or `libRCTWkWebView-macos.a`, when building for macOS) (see the following screenshot for reference)
 ![Linking](https://user-images.githubusercontent.com/608221/28060167-0650e3f4-6659-11e7-8085-7a8c2615f90f.png)
 5. Compile and profit (Remember to set `Minimum Deployment Target` to 8.0 for iOS, or 10.10 for macOS)
 
@@ -117,7 +117,7 @@ This property specifies how the safe area insets are used to modify the content 
 
 #### Incomplete APIs for macOS
 
-Some iOS methods have not been fully implemented on macOS yet. This is because the macOS implementation of `WKWebView` has some differences, such as lacking a `scrollView`, using `AppKit` instead of `UIKit`, and lacking any equivalent to `UIAlertController`; and so I don't quite know what should be done in the macOS case. I therefore can't guarantee the success of the following methods:
+Some iOS methods have not been fully implemented for macOS yet. This is because the macOS implementation of `WKWebView` has some differences, such as lacking a `scrollView`, and using `AppKit` instead of `UIKit`; and so I (@shirakaba) don't quite know what should be done in the macOS case. I therefore can't guarantee the success of the following methods for macOS:
 
 - `setHideKeyboardAccessoryView`
 - `setContentInset`
