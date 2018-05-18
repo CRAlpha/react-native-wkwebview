@@ -74,10 +74,6 @@ Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous 
 
 This will hide the keyboard accessory view (`<` `>` and `Done`). Default is false.
 
-- **keyboardDisplayRequiresUserAction**
-
-(iOS) Enables focusing an input inside a webview programatically - and the keyboard displaying.
-
 - **allowsLinkPreview**
 
 A Boolean value that determines whether pressing on a link displays a preview of the destination for the link. This props is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; before that, the default value is false.
@@ -85,6 +81,18 @@ A Boolean value that determines whether pressing on a link displays a preview of
 - **contentInsetAdjustmentBehavior**
 
 This property specifies how the safe area insets are used to modify the content area of the scroll view. The default value of this property is "never". Available on iOS 11 and later. Possible values are "automatic", "scrollableAxes", "never", "always". **New in 1.16.0**
+
+- **keyboardDisplayRequiresUserAction**
+
+Enables focusing an input inside a webview and showing the keyboard *programatically*. **New in 1.20.0**
+
+- **injectJavaScript, injectJavaScriptForMainFrameOnly**
+
+Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime/wkuserscriptinjectiontimeatdocumentstart?language=objc). **New in 1.20.0**
+
+- **injectedJavaScript, injectedJavaScriptForMainFrameOnly**
+
+Add JavaScript at document end. Since 1.20.0, the implementation has been changed to use WKUserScript.
 
 #### Currently supported props are:
 
