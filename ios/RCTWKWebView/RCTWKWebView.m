@@ -34,8 +34,8 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
-@property (nonatomic, strong) WKUserScript * atStartScript;
-@property (nonatomic, strong) WKUserScript * atEndScript;
+@property (nonatomic, strong) WKUserScript *atStartScript;
+@property (nonatomic, strong) WKUserScript *atEndScript;
 
 @end
 
@@ -60,7 +60,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if(self = [self initWithFrame:CGRectZero])
   {
     super.backgroundColor = [UIColor clearColor];
-
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
 
@@ -84,7 +83,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
 #endif
-
+    [self setupPostMessageScript];
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
   }
@@ -123,11 +122,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)resetupScripts {
   [_webView.configuration.userContentController removeAllUserScripts];
+  [self setupPostMessageScript];
   if (self.atStartScript) {
     [_webView.configuration.userContentController addUserScript:self.atStartScript];
   }
   if (self.atEndScript) {
     [_webView.configuration.userContentController addUserScript:self.atEndScript];
+  }
+}
+
+- (void)setupPostMessageScript {
+  if (_messagingEnabled) {
+    NSString *source=@"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
+    WKUserScript *script = [[WKUserScript alloc] initWithSource:source
+                           injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                               forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
+    [_webView.configuration.userContentController addUserScript:script];
   }
 }
 
@@ -516,20 +526,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
-  if (_messagingEnabled) {
-#if RCT_DEV
-    // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-
-    [webView evaluateJavaScript:testPostMessageNative completionHandler:^(id result, NSError *error) {
-      if (!result) {
-        RCTLogWarn(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-      }
-    }];
-#endif
-    NSString *source = @"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
-    [webView evaluateJavaScript:source completionHandler:nil];
-  }
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
   if (_onLoadingFinish && !webView.loading && ![webView.URL.absoluteString isEqualToString:@"about:blank"]) {
     _onLoadingFinish([self baseEvent]);
