@@ -87,6 +87,7 @@ This property specifies how the safe area insets are used to modify the content 
 - automaticallyAdjustContentInsets
 - contentInset
 - html (deprecated)
+- injectJavaScript
 - injectedJavaScript
 - onError
 - onLoad
