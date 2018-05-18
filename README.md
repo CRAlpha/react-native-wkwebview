@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
 
-React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. 
+React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost.
 
 **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
 
@@ -73,6 +73,10 @@ Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous 
 - **hideKeyboardAccessoryView**
 
 This will hide the keyboard accessory view (`<` `>` and `Done`). Default is false.
+
+- **keyboardDisplayRequiresUserAction**
+
+(iOS) Enables focusing an input inside a webview programatically - and the keyboard displaying.
 
 - **allowsLinkPreview**
 
