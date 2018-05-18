@@ -1,6 +1,7 @@
 #import "RCTWKWebViewManager.h"
 
 #import "RCTWKWebView.h"
+#import "WKProcessPool+SharedProcessPool.h"
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
@@ -8,6 +9,19 @@
 #import <React/RCTBridgeModule.h>
 
 #import <WebKit/WebKit.h>
+
+@implementation RCTConvert (UIScrollView)
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
+                                                                  @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
+                                                                  @"scrollableAxes": @(UIScrollViewContentInsetAdjustmentScrollableAxes),
+                                                                  @"never": @(UIScrollViewContentInsetAdjustmentNever),
+                                                                  @"always": @(UIScrollViewContentInsetAdjustmentAlways),
+                                                                  }), UIScrollViewContentInsetAdjustmentNever, integerValue)
+#endif
+
+@end
 
 @interface RCTWKWebViewManager () <RCTWKWebViewDelegate>
 
@@ -23,7 +37,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[[WKProcessPool alloc] init]];
+  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[WKProcessPool sharedProcessPool]];
   webView.delegate = self;
   return webView;
 }
@@ -50,10 +64,10 @@ RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
-RCT_REMAP_VIEW_PROPERTY(allowsLinkPreview, _webView.allowsLinkPreview, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(allowsLinkPreview, BOOL)
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
 #endif
-
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {

@@ -1,3 +1,7 @@
 'use strict';
 
-module.exports = {};
+import {
+  WebView,
+} from 'react-native';
+
+export default WebView;

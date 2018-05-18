@@ -134,6 +134,18 @@ class WKWebView extends React.Component {
     ]),
 
     /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     */
+    contentInsetAdjustmentBehavior: PropTypes.oneOf([
+      'automatic',
+      'scrollableAxes',
+      'never', // default
+      'always',
+    ]),
+
+    /**
      * Function that returns a view to show if there's an error.
      */
     renderError: PropTypes.func, // view to show if there's an error
@@ -253,7 +265,7 @@ class WKWebView extends React.Component {
 
   componentWillMount() {
     if (this.props.startInLoadingState) {
-      this.setState({viewState: WebViewState.LOADING});
+      this.setState({ viewState: WebViewState.LOADING });
     }
   }
 
@@ -313,6 +325,7 @@ class WKWebView extends React.Component {
         ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
+        contentInsetAdjustmentBehavior={this.props.contentInsetAdjustmentBehavior}
         source={resolveAssetSource(source)}
         injectJavaScriptForMainFrameOnly={this.props.injectJavaScriptForMainFrameOnly}
         injectedJavaScriptForMainFrameOnly={this.props.injectedJavaScriptForMainFrameOnly}
@@ -386,6 +399,7 @@ class WKWebView extends React.Component {
    * Reloads the current page.
    */
   reload = () => {
+    this.setState({ viewState: WebViewState.LOADING });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,
@@ -451,7 +465,7 @@ class WKWebView extends React.Component {
 
   _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
-    const {onError, onLoadEnd} = this.props;
+    const { onError, onLoadEnd } = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
@@ -463,7 +477,7 @@ class WKWebView extends React.Component {
   };
 
   _onLoadingFinish = (event: Event) => {
-    const {onLoad, onLoadEnd} = this.props;
+    const { onLoad, onLoadEnd } = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
@@ -478,7 +492,7 @@ class WKWebView extends React.Component {
   };
 
   _onMessage = (event: Event) => {
-    var {onMessage} = this.props;
+    var { onMessage } = this.props;
     onMessage && onMessage(event);
   };
 
