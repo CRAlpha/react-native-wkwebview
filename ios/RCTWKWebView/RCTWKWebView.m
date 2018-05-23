@@ -286,7 +286,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_webView reload];
+  // fix reload problem after network connection failed
+  NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
+
+  if (request.URL && !_webView.URL.absoluteString.length) {
+      [_webView loadRequest:request];
+  } else {
+      [_webView reload];
+  }
 }
 
 - (void)stopLoading
