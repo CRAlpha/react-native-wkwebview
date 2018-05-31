@@ -239,6 +239,10 @@ class WKWebView extends React.Component {
      */
     hideKeyboardAccessoryView: PropTypes.bool,
     /**
+     * Enable the keyboard to display when focusing an input in a webview programatically
+     */
+    keyboardDisplayRequiresUserAction: PropTypes.bool,
+    /**
      * A Boolean value that determines whether pressing on a link displays a preview of the destination for the link. This props is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; before that, the default value is false.
      */
     allowsLinkPreview: PropTypes.bool,
@@ -338,6 +342,7 @@ class WKWebView extends React.Component {
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
         hideKeyboardAccessoryView={this.props.hideKeyboardAccessoryView}
+        keyboardDisplayRequiresUserAction={this.props.keyboardDisplayRequiresUserAction}
         allowsLinkPreview={this.props.allowsLinkPreview}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}

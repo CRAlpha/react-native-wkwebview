@@ -37,6 +37,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSString *injectJavaScript;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
+// @property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction; /* macOS doesn't have an on-screen keyboard */
 
 
 - (void)goForward;
