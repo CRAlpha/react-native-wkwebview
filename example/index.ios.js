@@ -17,9 +17,9 @@ export default class example extends Component {
           hideKeyboardAccessoryView={false}
           ref={(c) => this.webview = c}
           sendCookies={true}
-          source={{ uri: 'https://httpbin.org/get' }}
+          source={{ uri: 'https://example.org/' }}
           onMessage={(e) => console.log(e.nativeEvent)}
-          injectedJavaScript="window.postMessage('Hello from JavaScript'); document.addEventListener('message', e => { alert(e.data); });"
+          injectedJavaScript="window.postMessage('Hello from WkWebView');"
         />
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.reload()}>Reload</Text>
         <Text style={{ fontWeight: 'bold', padding: 10 }} onPress={() => this.webview.postMessage("Hello from React Native")}>Post Message</Text>

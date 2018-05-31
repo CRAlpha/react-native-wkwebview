@@ -200,6 +200,20 @@ class WKWebView extends React.Component {
     startInLoadingState: PropTypes.bool,
     style: ViewPropTypes.style,
     /**
+     * If false injectJavaScript will run both main frame and iframe
+     * @platform ios
+     */
+    injectJavaScriptForMainFrameOnly: PropTypes.bool,
+    /**
+     * If false injectedJavaScript will run both main frame and iframe
+     * @platform ios
+     */
+    injectedJavaScriptForMainFrameOnly: PropTypes.bool,
+    /**
+     * Function that accepts a string that will be passed to the WebView and executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.string,
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
@@ -224,6 +238,10 @@ class WKWebView extends React.Component {
      * backward compatible.
      */
     hideKeyboardAccessoryView: PropTypes.bool,
+    /**
+     * Enable the keyboard to display when focusing an input in a webview programatically
+     */
+    keyboardDisplayRequiresUserAction: PropTypes.bool,
     /**
      * A Boolean value that determines whether pressing on a link displays a preview of the destination for the link. This props is available on devices that support 3D Touch. In iOS 10 and later, the default value is true; before that, the default value is false.
      */
@@ -313,6 +331,9 @@ class WKWebView extends React.Component {
         style={webViewStyles}
         contentInsetAdjustmentBehavior={this.props.contentInsetAdjustmentBehavior}
         source={resolveAssetSource(source)}
+        injectJavaScriptForMainFrameOnly={this.props.injectJavaScriptForMainFrameOnly}
+        injectedJavaScriptForMainFrameOnly={this.props.injectedJavaScriptForMainFrameOnly}
+        injectJavaScript={this.props.injectJavaScript}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
@@ -321,6 +342,7 @@ class WKWebView extends React.Component {
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
         hideKeyboardAccessoryView={this.props.hideKeyboardAccessoryView}
+        keyboardDisplayRequiresUserAction={this.props.keyboardDisplayRequiresUserAction}
         allowsLinkPreview={this.props.allowsLinkPreview}
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
@@ -382,6 +404,7 @@ class WKWebView extends React.Component {
    * Reloads the current page.
    */
   reload = () => {
+    this.setState({ viewState: WebViewState.LOADING });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWKWebView.Commands.reload,

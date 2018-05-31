@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
 
-React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost. 
+React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost.
 
 **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
 
@@ -82,11 +82,24 @@ A Boolean value that determines whether pressing on a link displays a preview of
 
 This property specifies how the safe area insets are used to modify the content area of the scroll view. The default value of this property is "never". Available on iOS 11 and later. Possible values are "automatic", "scrollableAxes", "never", "always". **New in 1.16.0**
 
+- **keyboardDisplayRequiresUserAction**
+
+Enables focusing an input inside a webview and showing the keyboard *programatically*. **New in 1.20.0**
+
+- **injectJavaScript, injectJavaScriptForMainFrameOnly**
+
+Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime/wkuserscriptinjectiontimeatdocumentstart?language=objc). **New in 1.20.0**
+
+- **injectedJavaScript, injectedJavaScriptForMainFrameOnly**
+
+Add JavaScript at document end. Since 1.20.0, the implementation has been changed to use WKUserScript.
+
 #### Currently supported props are:
 
 - automaticallyAdjustContentInsets
 - contentInset
 - html (deprecated)
+- injectJavaScript
 - injectedJavaScript
 - onError
 - onLoad
