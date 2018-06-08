@@ -90,6 +90,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return self;
 }
 
+- (void)setMessagingEnabled:(BOOL)messagingEnabled {
+  _messagingEnabled = messagingEnabled;
+  [self resetupScripts];
+}
+
 - (void)setInjectJavaScript:(NSString *)injectJavaScript {
   _injectJavaScript = injectJavaScript;
   self.atStartScript = [[WKUserScript alloc] initWithSource:injectJavaScript
