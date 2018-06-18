@@ -37,9 +37,11 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTWKWebView *webView = [[RCTWKWebView alloc] initWithProcessPool:[WKProcessPool sharedProcessPool]];
-  webView.delegate = self;
-  return webView;
+  if (_webView == nil) {
+    _webView = [[RCTWKWebView alloc] initWithProcessPool:[WKProcessPool sharedProcessPool]];
+    _webView.delegate = self;
+  }
+  return _webView;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
