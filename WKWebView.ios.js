@@ -446,6 +446,28 @@ class WKWebView extends React.Component {
   };
 
   /**
+   * Parse returned web cookies to javascript array of objects.
+   */
+  parseCookie = (cookies) => {
+    const cookieList = cookies.split('%');
+    const cookieArray = cookieList.map((cookie) => {
+      const cookieArr = cookie.split('\n')
+      cookieArr.shift()
+      return cookieArr
+    })
+    const cookieObjects = cookieArray.reduce((accumulator, value) => {
+      const valObj = {}
+      value.forEach((val) => {
+        const valArr = val.trim().split(':')
+        valObj[valArr[0]] = valArr[1]
+      })
+      accumulator.push(valObj);
+      return accumulator;
+    }, [])
+    return cookieObjects;
+  }
+
+  /**
    * Posts a message to the web view, which will emit a `message` event.
    * Accepts one argument, `data`, which must be a string.
    *
@@ -533,7 +555,8 @@ class WKWebView extends React.Component {
 
   _onCookiesSave = (event: Event) => {
     var { onCookiesSave } = this.props;
-    onCookiesSave && onCookiesSave(event);
+    const cookies = this.parseCookie(event.nativeEvent.data)
+    onCookiesSave && onCookiesSave(cookies);
   };
 
   _onScroll = (event: Event) => {

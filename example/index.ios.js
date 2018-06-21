@@ -17,7 +17,8 @@ export default class example extends Component {
           hideKeyboardAccessoryView={false}
           ref={(c) => this.webview = c}
           sendCookies={true}
-          source={{ uri: 'https://example.org/' }}
+          onCookiesSave={(c) => console.log('COOKIE', c)}
+          source={{ uri: 'https://google.com/' }}
           onMessage={(e) => console.log(e.nativeEvent)}
           onNavigationResponse={(e) => console.log(e.nativeEvent)}
           injectedJavaScript="window.postMessage('Hello from WkWebView'); document.addEventListener('message', function(e) { alert(e.data); });"
