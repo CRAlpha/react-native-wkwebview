@@ -183,6 +183,12 @@ class WKWebView extends React.Component {
      * must be a string.
      */
     onMessage: PropTypes.func,
+     /**
+     * A function to fetch all web cookies on page load.
+     * Useful for when there is a need to use some of the cookies
+     * in react native code.
+     */
+    onCookiesSave: PropTypes.func,
     /**
      * Receive scroll events from view
      */
@@ -350,6 +356,7 @@ class WKWebView extends React.Component {
         messagingEnabled={messagingEnabled}
         onProgress={this._onProgress}
         onMessage={this._onMessage}
+        onCookiesSave={this._onCookiesSave}
         onScroll={this._onScroll}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
@@ -501,6 +508,11 @@ class WKWebView extends React.Component {
     onMessage && onMessage(event);
   };
 
+  _onCookiesSave = (event: Event) => {
+    var { onCookiesSave } = this.props;
+    onCookiesSave && onCookiesSave(event);
+  };
+
   _onScroll = (event: Event) => {
     const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
@@ -513,6 +525,7 @@ const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
     onLoadingError: true,
     onLoadingFinish: true,
     onMessage: true,
+    onCookiesSave: true,
     messagingEnabled: PropTypes.bool,
   }
 });
