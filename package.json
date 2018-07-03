@@ -20,7 +20,7 @@
     "escapedName": "react-native-wkwebview-reborn",
     "rawSpec": "1.21.0",
     "saveSpec": null,
-    "fetchSpec": "1.21.0"
+    "fetchSpec": "1.22.0"
   },
   "_requiredBy": [
     "/"
