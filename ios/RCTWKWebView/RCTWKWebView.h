@@ -38,6 +38,9 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 @property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction;
+@property (nonatomic, assign) BOOL zoom;
+@property (nonatomic, assign) int xCoord;
+@property (nonatomic, assign) int yCoord;
 
 
 - (void)goForward;
@@ -48,5 +51,6 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 - (void)stopLoading;
 - (void)postMessage:(NSString *)message;
 - (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;
+- (void)setZoom:(BOOL)zoom x:(int)xCoord y:(int)yCoord;
 
 @end
