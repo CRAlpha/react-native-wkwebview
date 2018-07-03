@@ -18,7 +18,7 @@
     "raw": "react-native-wkwebview-reborn@1.21.0",
     "name": "react-native-wkwebview-reborn",
     "escapedName": "react-native-wkwebview-reborn",
-    "rawSpec": "1.21.0",
+    "rawSpec": "1.22.0",
     "saveSpec": null,
     "fetchSpec": "1.22.0"
   },
@@ -70,5 +70,5 @@
     "sync-from-example": "cp ./example/node_modules/react-native-wkwebview-reborn/*.js ./;cp -r ./example/node_modules/react-native-wkwebview-reborn/ios ./",
     "sync-to-example": "cp ./*.js ./example/node_modules/react-native-wkwebview-reborn/;cp -r ./ios ./example/node_modules/react-native-wkwebview-reborn/"
   },
-  "version": "1.21.0"
+  "version": "1.22.0"
 }
