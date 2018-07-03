@@ -1,4 +1,8 @@
-## WKWebView Component for React Native
+### THIS IS FROM https://github.com/CRAlpha/react-native-wkwebview ###
+### IT IS SIMPLY A FORK THAT I NEEDED ON NPM AND INCLUDES SOME **UNSTABLE** CHANGES I MADE ###
+### USE THIS AT YOUR OWN RISK!! THE PARENT ONE IS INCREDIBLE AND SHOULD BE USED ISNTEAD ###
+
+# WKWebView Component for React Native
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
 
