@@ -128,6 +128,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setMessagingEnabled:(BOOL)messagingEnabled {
+  _messagingEnabled = messagingEnabled;
+  [self setupPostMessageScript];
+}
+
 - (void)resetupScripts {
   [_webView.configuration.userContentController removeAllUserScripts];
   [self setupPostMessageScript];
