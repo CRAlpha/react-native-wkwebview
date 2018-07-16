@@ -299,11 +299,49 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView stopLoading];
 }
 
+- (void) copyCookies {
+  
+  NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+  NSArray* array = [storage cookies];
+  
+  
+  if (@available(ios 11,*)) {
+    
+    // The webView websiteDataStore only gets initialized, when needed. Setting cookies on the dataStore's
+    // httpCookieStore doesn't seem to initialize it. That's why fetchDataRecordsOfTypes is called.
+    // All the cookies of the sharedHttpCookieStorage, which is used in react-native-cookie,
+    // are copied to the webSiteDataStore's httpCookieStore.
+    // https://bugs.webkit.org/show_bug.cgi?id=185483
+    [_webView.configuration.websiteDataStore fetchDataRecordsOfTypes:[NSSet<NSString *> setWithObject:WKWebsiteDataTypeCookies] completionHandler:^(NSArray<WKWebsiteDataRecord *> *records) {
+      for (NSHTTPCookie* cookie in array) {
+        [_webView.configuration.websiteDataStore.httpCookieStore setCookie:cookie completionHandler:nil];
+      }
+    }];
+  } else {
+    // Create WKUserScript for each cookie
+    // Cookies are injected with Javascript AtDocumentStart
+    for (NSHTTPCookie* cookie in array){
+      NSString* cookieSource = [NSString stringWithFormat:@"document.cookie = '%@'", [self cookieDescription:cookie]];
+      WKUserScript* cookieScript = [[WKUserScript alloc]
+                                  initWithSource:cookieSource
+                                  injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+      
+    
+      [_webView.configuration.userContentController addUserScript:cookieScript];
+    }
+  }
+}
+
 - (void)setSource:(NSDictionary *)source
 {
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
     _sendCookies = [source[@"sendCookies"] boolValue];
+
+    if (_sendCookies) {
+      [self copyCookies];
+    }
+
     if ([source[@"customUserAgent"] length] != 0 && [_webView respondsToSelector:@selector(setCustomUserAgent:)]) {
       [_webView setCustomUserAgent:source[@"customUserAgent"]];
     }
