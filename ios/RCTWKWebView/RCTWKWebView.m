@@ -299,6 +299,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView stopLoading];
 }
 
+- (NSString *) cookieDescription:(NSHTTPCookie *)cookie {
+    
+    NSMutableString *cDesc = [[NSMutableString alloc] init];
+    [cDesc appendFormat:@"%@=%@;",
+     [[cookie name] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+     [[cookie value] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    if ([cookie.domain length] > 0)
+        [cDesc appendFormat:@"domain=%@;", [cookie domain]];
+    if ([cookie.path length] > 0)
+        [cDesc appendFormat:@"path=%@;", [cookie path]];
+    if (cookie.expiresDate != nil)
+        [cDesc appendFormat:@"expiresDate=%@;", [cookie expiresDate]];
+    
+    
+    return cDesc;
+}
+
 - (void) copyCookies {
   
   NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
