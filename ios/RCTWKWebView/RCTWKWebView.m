@@ -34,6 +34,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (assign) BOOL sendCookies;
+@property (assign) BOOL useWKCookieStore;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
 
@@ -317,13 +318,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void) copyCookies {
-  
+
   NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   NSArray* array = [storage cookies];
-  
-  
+
+
   if (@available(ios 11,*)) {
-    
+
     // The webView websiteDataStore only gets initialized, when needed. Setting cookies on the dataStore's
     // httpCookieStore doesn't seem to initialize it. That's why fetchDataRecordsOfTypes is called.
     // All the cookies of the sharedHttpCookieStorage, which is used in react-native-cookie,
@@ -340,10 +341,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     for (NSHTTPCookie* cookie in array){
       NSString* cookieSource = [NSString stringWithFormat:@"document.cookie = '%@'", [self cookieDescription:cookie]];
       WKUserScript* cookieScript = [[WKUserScript alloc]
-                                  initWithSource:cookieSource
-                                  injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
-      
-    
+                                    initWithSource:cookieSource
+                                    injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+
+
       [_webView.configuration.userContentController addUserScript:cookieScript];
     }
   }
@@ -354,8 +355,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
     _sendCookies = [source[@"sendCookies"] boolValue];
+    _useWKCookieStore = [source[@"useWKCookieStore"] boolValue];
 
-    if (_sendCookies) {
+    if (_useWKCookieStore) {
       [self copyCookies];
     }
 

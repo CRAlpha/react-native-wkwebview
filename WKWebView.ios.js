@@ -229,6 +229,10 @@ class WKWebView extends React.Component {
      */
     sendCookies: PropTypes.bool,
     /**
+     * Initializes the webView's WKHTTPCookieStorage and copies all cookies from sharedHTTPCookieStorage
+     */
+    useWKCookieStore: PropTypes.bool,
+    /**
      * If set to true, target="_blank" or window.open will be opened in WebView, instead
      * of new window. Default is false to be backward compatible.
      */
@@ -313,6 +317,7 @@ class WKWebView extends React.Component {
       source.sendCookies = this.props.sendCookies;
       source.customUserAgent =
         this.props.customUserAgent || this.props.userAgent;
+      source.useWKCookieStore: this.props.useWKCookieStore;
     }
 
     if (this.props.html) {
