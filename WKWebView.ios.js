@@ -259,6 +259,10 @@ class WKWebView extends React.Component {
      * A Boolean value that sets whether diagonal scrolling is allowed.
     */
     directionalLockEnabled: PropTypes.bool,
+
+    zoom: PropTypes.bool,
+    xCoord: PropTypes.number,
+    yCoord: PropTypes.number
   };
 
   state = {
@@ -353,6 +357,9 @@ class WKWebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
+        zoom={this.props.zoom}
+        xCoord={this.props.xCoord}
+        yCoord={this.props.yCoord}
       />;
 
     return (

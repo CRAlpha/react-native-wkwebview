@@ -125,6 +125,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self setupPostMessageScript];
 }
 
+-(void)setXCoord:(int)xCoord{
+    _xCoord = xCoord;
+}
+
+-(void)setYCoord:(int)yCoord{
+    _yCoord = yCoord;
+}
+
+-(void)setZoom:(BOOL)zoom{
+    _zoom = zoom;
+    /*if(zoom && _xCoord != 0 && _yCoord != 0){
+        CGRect myRect = CGRectMake(_xCoord, _yCoord, 100, 100);
+        [_webView.scrollView zoomToRect:myRect animated:false];
+    }*/
+}
+
+
+
 - (void)resetupScripts {
   [_webView.configuration.userContentController removeAllUserScripts];
   [self setupPostMessageScript];
@@ -531,10 +549,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
+    [self zoomIn];
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
   if (_onLoadingFinish && !webView.loading && ![webView.URL.absoluteString isEqualToString:@"about:blank"]) {
     _onLoadingFinish([self baseEvent]);
   }
+}
+
+- (void)zoomIn{
+    if(_zoom && _yCoord != 0 && _xCoord != 0){
+        CGRect myRect = CGRectMake(_xCoord, _yCoord, 80, 80);
+        [_webView.scrollView zoomToRect:myRect animated:false];
+    }
 }
 
 #pragma mark - WKUIDelegate
