@@ -66,6 +66,12 @@ It allows you to provide a fallback URL for iOS 8 users.
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
 ```
 
+You can also use the `require` syntax (sendCookies and userAgent will be ignored)
+
+```js
+<WKWebView source={require('./index.html')} />
+```
+
 - **userAgent="MyUserAgent" (or customUserAgent="...")**
 
 Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous version will simply ignore this props.
