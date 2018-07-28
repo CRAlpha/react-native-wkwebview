@@ -138,7 +138,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setupPostMessageScript {
   if (_messagingEnabled) {
-    NSString *source=@"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
+    NSString *source=@"window.originalPostMessage = window.postMessage; window.postMessage = function(message, targetOrigin, transfer) { return typeof targetOrigin === 'undefined' ? window.webkit.messageHandlers.reactNative.postMessage(message) : window.originalPostMessage(message, targetOrigin, transfer); };";
     WKUserScript *script = [[WKUserScript alloc] initWithSource:source
                            injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
                                                forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
