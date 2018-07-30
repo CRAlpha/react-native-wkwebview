@@ -317,7 +317,7 @@ class WKWebView extends React.Component {
       source.sendCookies = this.props.sendCookies;
       source.customUserAgent =
         this.props.customUserAgent || this.props.userAgent;
-      source.useWKCookieStore: this.props.useWKCookieStore;
+      source.useWKCookieStore = this.props.useWKCookieStore;
     }
 
     if (this.props.html) {
