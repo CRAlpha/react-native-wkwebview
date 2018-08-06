@@ -11,7 +11,8 @@ import ReactNative, {
   ViewPropTypes,
   NativeModules,
   Text,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
 
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
@@ -451,10 +452,18 @@ class WKWebView extends React.Component {
   parseCookie = (cookies) => {
     const cookieList = cookies.split('%');
     const cookieArray = cookieList.map((cookie) => {
-      const cookieArr = cookie.split('\n')
+      let cookieArr;
+      const IOSVersion = parseInt(Platform.Version, 10);
+      if (IOSVersion <= 10) {
+        const trimmed = cookie.replace(/"/g, '');
+        cookieArr = trimmed.split(' ');
+      } else {
+        cookieArr = cookie.split('\n');
+      }
       cookieArr.shift()
       return cookieArr
     })
+
     const cookieObjects = cookieArray.reduce((accumulator, value) => {
       const valObj = {}
       value.forEach((val) => {
