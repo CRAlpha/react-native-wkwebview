@@ -312,13 +312,11 @@ class WKWebView extends React.Component {
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    let source = this.props.source || {};
-    if (typeof source == 'object') {
-      source.sendCookies = this.props.sendCookies;
-      source.customUserAgent =
-        this.props.customUserAgent || this.props.userAgent;
-      source.useWKCookieStore = this.props.useWKCookieStore;
-    }
+    let source = Object.assign({}, this.props.source || {}, {
+      sendCookies: this.props.sendCookies,
+      customUserAgent: this.props.customUserAgent || this.props.userAgent,
+      useWKCookieStore: this.props.useWKCookieStore,
+    });
 
     if (this.props.html) {
       source.html = this.props.html;
