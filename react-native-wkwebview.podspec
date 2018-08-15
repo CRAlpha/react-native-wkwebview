@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
   s.source_files  = "ios/RCTWKWebView/*.{h,m}"
 
   s.dependency "React"
+  s.dependency "TrustKit"
 end

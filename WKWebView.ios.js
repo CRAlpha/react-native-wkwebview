@@ -310,15 +310,23 @@ class WKWebView extends React.Component {
 
     let source = this.props.source || {};
     if (typeof source == 'object') {
-      source.sendCookies = this.props.sendCookies;
-      source.customUserAgent =
-        this.props.customUserAgent || this.props.userAgent;
+      source = {
+        ...source,
+        sendCookies: this.props.sendCookies,
+        customUserAgent: this.props.customUserAgent || this.props.userAgent
+      };
     }
 
     if (this.props.html) {
-      source.html = this.props.html;
+      source = {
+        ...source,
+        html: this.props.html
+      };
     } else if (this.props.url) {
-      source.uri = this.props.url;
+      source = {
+        ...source,
+        uri: this.props.url
+      };
     }
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
