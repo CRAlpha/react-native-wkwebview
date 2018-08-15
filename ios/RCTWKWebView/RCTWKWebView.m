@@ -308,7 +308,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (NSString *) cookieDescription:(NSHTTPCookie *)cookie {
-    
+
     NSMutableString *cDesc = [[NSMutableString alloc] init];
     [cDesc appendFormat:@"%@=%@;",
      [[cookie name] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
@@ -319,8 +319,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         [cDesc appendFormat:@"path=%@;", [cookie path]];
     if (cookie.expiresDate != nil)
         [cDesc appendFormat:@"expiresDate=%@;", [cookie expiresDate]];
-    
-    
+
+
     return cDesc;
 }
 
