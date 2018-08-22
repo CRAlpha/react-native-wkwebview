@@ -48,5 +48,6 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 - (void)stopLoading;
 - (void)postMessage:(NSString *)message;
 - (void)evaluateJavaScript:(NSString *)javaScriptString completionHandler:(void (^)(id, NSError *error))completionHandler;
+- (void)removeData:(NSArray *)types completionHandler:(void (^)(id, NSError *error))completionHandler;
 
 @end

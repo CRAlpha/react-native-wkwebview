@@ -281,6 +281,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView evaluateJavaScript:source completionHandler:nil];
 }
 
+- (void)removeData:(NSArray *)types
+         completionHandler:(void (^)(id, NSError *error))completionHandler
+{
+  NSSet *websiteDataTypes;
+
+  if (types != nil) {
+    websiteDataTypes = [NSSet setWithArray:types];
+  } else {
+    websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+  }
+   NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+  [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+    completionHandler(self, nil);
+  }];
+}
 
 - (void)goBack
 {

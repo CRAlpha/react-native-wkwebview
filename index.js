@@ -1,5 +1,6 @@
 'use strict';
 
-import WKWebView from './WKWebView';
+import WKWebView, {WebsiteDataTypes} from './WKWebView';
 
 export default WKWebView;
+export {WebsiteDataTypes}
