@@ -76,6 +76,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     config.userContentController = userController;
     
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
+    _webView.allowsMagnification = YES; // macOS-only
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
 
