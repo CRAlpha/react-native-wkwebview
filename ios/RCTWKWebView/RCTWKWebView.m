@@ -45,6 +45,7 @@
   BOOL _injectJavaScriptForMainFrameOnly;
   BOOL _injectedJavaScriptForMainFrameOnly;
   NSString *_injectJavaScript;
+  NSString *_injectJavaScriptCookies;
   NSString *_injectedJavaScript;
 }
 
@@ -133,6 +134,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
   if (self.atEndScript) {
     [_webView.configuration.userContentController addUserScript:self.atEndScript];
+  }
+}
+
+- (void)resetInjectJavaScript{
+  if(_injectJavaScript != nil && _injectJavaScriptCookies != nil){
+    [self setInjectJavaScript: [_injectJavaScriptCookies stringByAppendingString:_injectJavaScript]];
+  } else if(_injectJavaScriptCookies != nil){
+    [self setInjectJavaScript:_injectJavaScriptCookies];
+  } else if(_injectJavaScript != nil){
+    [self setInjectJavaScript:_injectJavaScript];
   }
 }
 
@@ -333,6 +344,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
 
     NSURLRequest *request = [RCTConvert NSURLRequest:source];
+    
+    if ( source[@"cookies"] != nil ){
+      if ( [source[@"cookies"] isKindOfClass:[NSDictionary class]] ){
+        NSDictionary* cookies = (NSDictionary*)source[@"cookies"];
+        NSMutableString* cookiesString = [NSMutableString string];
+        NSMutableString* javascriptCookiesString = [NSMutableString string];
+        
+        for ( NSString* key in cookies ){
+          NSString* value = cookies[key];
+          if( value != nil ){
+            [cookiesString appendFormat:@"%@=%@;", key, value];
+            [javascriptCookiesString appendFormat:@"document.cookie='%@=%@';", key, value];
+          }
+        }
+        
+        _injectJavaScriptCookies = javascriptCookiesString;
+        [self resetInjectJavaScript];
+        
+        NSMutableURLRequest* mutableRequest = [request mutableCopy];
+        [mutableRequest addValue:cookiesString forHTTPHeaderField:@"Cookie"];
+        request = mutableRequest;
+      }
+    }
+    
     // Because of the way React works, as pages redirect, we actually end up
     // passing the redirect urls back here, so we ignore them if trying to load
     // the same url. We'll expose a call to 'reload' to allow a user to load
