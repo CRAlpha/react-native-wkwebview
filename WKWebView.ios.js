@@ -188,6 +188,10 @@ class WKWebView extends React.Component {
      */
     onScroll: PropTypes.func,
     /**
+     * Receive webview process terminate events from view
+     */
+    onWebViewDidTerminate: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -350,6 +354,7 @@ class WKWebView extends React.Component {
         onProgress={this._onProgress}
         onMessage={this._onMessage}
         onScroll={this._onScroll}
+        onWebViewDidTerminate={this._onWebViewDidTerminate}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
@@ -503,6 +508,11 @@ class WKWebView extends React.Component {
   _onScroll = (event: Event) => {
     const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
+  };
+
+  _onWebViewDidTerminate = (event: Event) => {
+    const onWebViewDidTerminate = this.props.onWebViewDidTerminate;
+    onWebViewDidTerminate && onWebViewDidTerminate(event.nativeEvent);
   };
 }
 
