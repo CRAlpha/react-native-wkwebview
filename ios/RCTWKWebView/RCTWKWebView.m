@@ -607,6 +607,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
 {
   RCTLogWarn(@"Webview Process Terminated");
+  
+  // 告知用户手机内存不足。
+  UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"哎哟，页面崩溃了o(╥﹏╥)o"
+                                                                 message:@"您的手机内存有点不足了，请重启手机后再试试~"
+                                                          preferredStyle:UIAlertControllerStyleAlert];
+  
+  UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"好的" style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * action) {
+                                                          //响应事件
+                                                          NSLog(@"action = %@", action);
+                                                        }];
+  
+  [alert addAction:defaultAction];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    while (root.presentedViewController != nil) {
+      root = root.presentedViewController;
+    }
+    [root presentViewController:alert animated:YES completion:nil];
+  });
+    
+  // 当 webview 内存溢出的时候，刷新页面。
+//  [self reload];
 }
 
 @end
