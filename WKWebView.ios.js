@@ -400,6 +400,20 @@ class WKWebView extends React.Component {
   };
 
   /**
+   * Obtain a Promise for the title of the currently displayed document.
+   */
+  title = () => {
+    return WKWebViewManager.title(this.getWebViewHandle());
+  };
+
+  /**
+   * Obtain a Promise for the absolute URL of the currently displayed document.
+   */
+  location = () => {
+    return WKWebViewManager.location(this.getWebViewHandle());
+  };
+
+  /**
    * Reloads the current page.
    */
   reload = () => {
