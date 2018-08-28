@@ -33,6 +33,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy) RCTDirectEventBlock onWebViewDidTerminate;
 @property (assign) BOOL sendCookies;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
@@ -291,7 +292,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_webView reload];
+  // fix reload problem after network connection failed
+  NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
+
+  if (request.URL && !_webView.URL.absoluteString.length) {
+      [_webView loadRequest:request];
+  } else {
+      [_webView reload];
+  }
 }
 
 - (void)stopLoading
@@ -600,6 +608,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
 {
   RCTLogWarn(@"Webview Process Terminated");
+
+  // send webview process terminate events
+  if (_onWebViewDidTerminate) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    _onWebViewDidTerminate(event);
+  }
 }
 
 @end
