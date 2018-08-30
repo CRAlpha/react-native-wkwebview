@@ -21,6 +21,12 @@ RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
                                                                   }), UIScrollViewContentInsetAdjustmentNever, integerValue)
 #endif
 
+RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
+                                                      @"none": @(UIScrollViewKeyboardDismissModeNone),
+                                                      @"on-drag": @(UIScrollViewKeyboardDismissModeOnDrag),
+                                                      @"interactive": @(UIScrollViewKeyboardDismissModeInteractive),
+                                                      }), UIScrollViewKeyboardDismissModeNone, integerValue)
+
 @end
 
 @interface RCTWKWebViewManager () <RCTWKWebViewDelegate>
@@ -46,6 +52,7 @@ RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(pagingEnabled, _webView.scrollView.pagingEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+RCT_REMAP_VIEW_PROPERTY(keyboardDismissMode, _webView.scrollView.keyboardDismissMode, UIScrollViewKeyboardDismissMode)
 RCT_REMAP_VIEW_PROPERTY(directionalLockEnabled, _webView.scrollView.directionalLockEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(allowsBackForwardNavigationGestures, _webView.allowsBackForwardNavigationGestures, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectJavaScriptForMainFrameOnly, BOOL)
