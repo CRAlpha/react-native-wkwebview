@@ -188,6 +188,10 @@ class WKWebView extends React.Component {
      */
     onScroll: PropTypes.func,
     /**
+     * A callback to get response headers, http status code and http localized status code.
+     */
+    onNavigationResponse: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
