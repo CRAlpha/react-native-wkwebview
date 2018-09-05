@@ -62,18 +62,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-
+    
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     config.processPool = processPool;
     WKUserContentController* userController = [[WKUserContentController alloc]init];
     [userController addScriptMessageHandler:[[WeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
     config.userContentController = userController;
-
+    
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
     _webView.scrollView.delegate = self;
-
+    
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
@@ -138,9 +138,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setupPostMessageScript {
   if (_messagingEnabled) {
-    NSString *source=@"window.originalPostMessage = window.postMessage; window.postMessage = function (data) { window.webkit.messageHandlers.reactNative.postMessage(data); }";
+    NSString *source = @"window.originalPostMessage = window.postMessage;"
+    "window.postMessage = function(message, targetOrigin, transfer) {"
+      "window.webkit.messageHandlers.reactNative.postMessage(message);"
+      "if (typeof targetOrigin !== 'undefined') {"
+        "window.originalPostMessage(message, targetOrigin, transfer);"
+      "}"
+    "};";
     WKUserScript *script = [[WKUserScript alloc] initWithSource:source
-                           injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                                  injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                                                forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
     [_webView.configuration.userContentController addUserScript:script];
   }
@@ -156,7 +162,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       request = mutableRequest;
     }
   }
-
+  
   [_webView loadRequest:request];
 }
 
@@ -172,29 +178,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (!hideKeyboardAccessoryView) {
     return;
   }
-
+  
   UIView* subview;
   for (UIView* view in _webView.scrollView.subviews) {
     if([[view.class description] hasPrefix:@"WKContent"])
       subview = view;
   }
-
+  
   if(subview == nil) return;
-
+  
   NSString* name = [NSString stringWithFormat:@"%@_SwizzleHelperWK", subview.class.superclass];
   Class newClass = NSClassFromString(name);
-
+  
   if(newClass == nil)
   {
     newClass = objc_allocateClassPair(subview.class, [name cStringUsingEncoding:NSASCIIStringEncoding], 0);
     if(!newClass) return;
-
+    
     Method method = class_getInstanceMethod([_SwizzleHelperWK class], @selector(inputAccessoryView));
     class_addMethod(newClass, @selector(inputAccessoryView), method_getImplementation(method), method_getTypeEncoding(method));
-
+    
     objc_registerClassPair(newClass);
   }
-
+  
   object_setClass(subview, newClass);
 }
 
@@ -205,13 +211,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (!keyboardDisplayRequiresUserAction) {
     Class class = NSClassFromString(@"WKContentView");
     NSOperatingSystemVersion iOS_11_3_0 = (NSOperatingSystemVersion){11, 3, 0};
-
+    
     if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion: iOS_11_3_0]) {
       SEL selector = sel_getUid("_startAssistingNode:userIsInteracting:blurPreviousNode:changingActivityState:userObject:");
       Method method = class_getInstanceMethod(class, selector);
       IMP original = method_getImplementation(method);
       IMP override = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, BOOL arg3, id arg4) {
-          ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3, arg4);
+        ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3, arg4);
       });
       method_setImplementation(method, override);
     } else {
@@ -219,7 +225,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       Method method = class_getInstanceMethod(class, selector);
       IMP original = method_getImplementation(method);
       IMP override = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, id arg3) {
-          ((void (*)(id, SEL, void*, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3);
+        ((void (*)(id, SEL, void*, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3);
       });
       method_setImplementation(method, override);
     }
@@ -307,20 +313,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     if ([source[@"customUserAgent"] length] != 0 && [_webView respondsToSelector:@selector(setCustomUserAgent:)]) {
       [_webView setCustomUserAgent:source[@"customUserAgent"]];
     }
-
+    
     // Allow loading local files:
     // <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
     // Only works for iOS 9+. So iOS 8 will simply ignore those two values
     NSString *file = [RCTConvert NSString:source[@"file"]];
     NSString *allowingReadAccessToURL = [RCTConvert NSString:source[@"allowingReadAccessToURL"]];
-
+    
     if (file && [_webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
       NSURL *fileURL = [RCTConvert NSURL:file];
       NSURL *baseURL = [RCTConvert NSURL:allowingReadAccessToURL];
       [_webView loadFileURL:fileURL allowingReadAccessToURL:baseURL];
       return;
     }
-
+    
     // Check for a static html source first
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {
@@ -331,7 +337,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [_webView loadHTMLString:html baseURL:baseURL];
       return;
     }
-
+    
     NSURLRequest *request = [RCTConvert NSURLRequest:source];
     // Because of the way React works, as pages redirect, we actually end up
     // passing the redirect urls back here, so we ignore them if trying to load
@@ -384,7 +390,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                                                                  @"canGoBack": @(_webView.canGoBack),
                                                                                                  @"canGoForward" : @(_webView.canGoForward),
                                                                                                  }];
-
+  
   return event;
 }
 
@@ -423,26 +429,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return;
   }
   NSDictionary *event = @{
-                        @"contentOffset": @{
-                            @"x": @(scrollView.contentOffset.x),
-                            @"y": @(scrollView.contentOffset.y)
-                            },
-                        @"contentInset": @{
-                            @"top": @(scrollView.contentInset.top),
-                            @"left": @(scrollView.contentInset.left),
-                            @"bottom": @(scrollView.contentInset.bottom),
-                            @"right": @(scrollView.contentInset.right)
-                            },
-                        @"contentSize": @{
-                            @"width": @(scrollView.contentSize.width),
-                            @"height": @(scrollView.contentSize.height)
-                            },
-                        @"layoutMeasurement": @{
-                            @"width": @(scrollView.frame.size.width),
-                            @"height": @(scrollView.frame.size.height)
-                            },
-                        @"zoomScale": @(scrollView.zoomScale ?: 1),
-                        };
+                          @"contentOffset": @{
+                              @"x": @(scrollView.contentOffset.x),
+                              @"y": @(scrollView.contentOffset.y)
+                              },
+                          @"contentInset": @{
+                              @"top": @(scrollView.contentInset.top),
+                              @"left": @(scrollView.contentInset.left),
+                              @"bottom": @(scrollView.contentInset.bottom),
+                              @"right": @(scrollView.contentInset.right)
+                              },
+                          @"contentSize": @{
+                              @"width": @(scrollView.contentSize.width),
+                              @"height": @(scrollView.contentSize.height)
+                              },
+                          @"layoutMeasurement": @{
+                              @"width": @(scrollView.frame.size.width),
+                              @"height": @(scrollView.frame.size.height)
+                              },
+                          @"zoomScale": @(scrollView.zoomScale ?: 1),
+                          };
   _onScroll(event);
 }
 
@@ -450,8 +456,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #if DEBUG
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    NSURLCredential * credential = [[NSURLCredential alloc] initWithTrust:[challenge protectionSpace].serverTrust];
-    completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+  NSURLCredential * credential = [[NSURLCredential alloc] initWithTrust:[challenge protectionSpace].serverTrust];
+  completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
 }
 #endif
 
@@ -461,9 +467,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSURLRequest *request = navigationAction.request;
   NSURL* url = request.URL;
   NSString* scheme = url.scheme;
-
+  
   BOOL isJSNavigation = [scheme isEqualToString:RCTJSNavigationScheme];
-
+  
   // handle mailto and tel schemes
   if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"]) {
     if ([app canOpenURL:url]) {
@@ -472,7 +478,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
   }
-
+  
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
@@ -486,7 +492,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return decisionHandler(WKNavigationActionPolicyCancel);
     }
   }
-
+  
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
     BOOL isTopFrame = [url isEqual:request.mainDocumentURL];
@@ -499,7 +505,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _onLoadingStart(event);
     }
   }
-
+  
   if (isJSNavigation) {
     decisionHandler(WKNavigationActionPolicyCancel);
   }
@@ -518,7 +524,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
       return;
     }
-
+    
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary:@{
                                       @"domain": error.domain,
@@ -541,7 +547,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
-
+  
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Close", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     completionHandler();
   }]];
@@ -550,7 +556,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler {
-
+  
   // TODO We have to think message to confirm "YES"
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -564,17 +570,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler {
-
+  
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:prompt message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
     textField.text = defaultText;
   }];
-
+  
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     NSString *input = ((UITextField *)alertController.textFields.firstObject).text;
     completionHandler(input);
   }]];
-
+  
   [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     completionHandler(nil);
   }]];
