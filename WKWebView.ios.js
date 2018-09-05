@@ -354,6 +354,7 @@ class WKWebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
+        onNavigationResponse={this._onNavigationResponse}
       />;
 
     return (
@@ -505,6 +506,11 @@ class WKWebView extends React.Component {
     const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
   };
+
+  _onNavigationResponse = (event: Event) => {
+    const { onNavigationResponse } = this.props;
+    onNavigationResponse && onNavigationResponse(event)
+  }
 }
 
 const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {

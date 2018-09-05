@@ -69,6 +69,7 @@ RCT_EXPORT_VIEW_PROPERTY(allowsLinkPreview, BOOL)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
 #endif
+RCT_EXPORT_VIEW_PROPERTY(onNavigationResponse, RCTDirectEventBlock)
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
