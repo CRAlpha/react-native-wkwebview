@@ -296,6 +296,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return [_webView canGoForward];
 }
 
+- (NSString *)title {
+  return _webView.title;
+}
+
+- (NSString *)location {
+  return _webView.URL.absoluteString;
+}
+
 - (void)reload
 {
   [_webView reload];
