@@ -452,10 +452,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #pragma mark - WKNavigationDelegate methods
 
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+  @try {
     TSKPinningValidator *pinningValidator = [[TrustKit sharedInstance] pinningValidator];
     if (![pinningValidator handleChallenge:challenge completionHandler:completionHandler]) {
       completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
+  }@catch (NSException *e) {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+  }
 }
 
 - (void)webView:(__unused WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
