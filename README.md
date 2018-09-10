@@ -43,15 +43,15 @@ WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy U
 
 A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
 
-- **onNavigationResponse**
-
-A callback to get response headers, http status code and http localized status code.
-
 ```js
 <WKWebView onProgress={(progress) => console.log(progress)} />
 ```
 
 `progress` is a double between 0 and 1.
+
+- **onNavigationResponse**
+
+A callback to get response headers, http status code and http localized status code.
 
 - **openNewWindowInWebView**
 
@@ -103,6 +103,10 @@ Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart]
 - **injectedJavaScript, injectedJavaScriptForMainFrameOnly**
 
 Add JavaScript at document end. Since 1.20.0, the implementation has been changed to use WKUserScript.
+
+- **allowsBackForwardNavigationGestures**
+
+Enable horizontal swipe gestures will trigger back-forward navigations. Derived from [`allowsBackForwardNavigationGestures`](https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu) property.
 
 #### Currently supported props are:
 
