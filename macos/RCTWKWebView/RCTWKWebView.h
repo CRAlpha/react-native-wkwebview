@@ -1,5 +1,5 @@
 #import <WebKit/WebKit.h>
-
+#import <React/RCTComponent.h>
 #import <React/RCTView.h>
 
 @class RCTWKWebView;
@@ -27,7 +27,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 
 @property (nonatomic, copy) NSDictionary *source;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (nonatomic, assign) NSEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, assign) BOOL allowsLinkPreview;
@@ -37,7 +37,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, copy) NSString *injectJavaScript;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
-// @property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction; /* macOS doesn't have an on-screen keyboard */
+@property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction;
 
 
 - (void)goForward;

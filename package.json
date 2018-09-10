@@ -54,7 +54,8 @@
     "native",
     "wkwebview",
     "webview",
-    "ios"
+    "ios",
+    "macos"
   ],
   "license": "MIT",
   "main": "index.js",
@@ -77,5 +78,5 @@
     "sync-from-example": "cp ./example/node_modules/react-native-wkwebview-reborn/*.js ./;cp -r ./example/node_modules/react-native-wkwebview-reborn/ios ./",
     "sync-to-example": "cp ./*.js ./example/node_modules/react-native-wkwebview-reborn/;cp -r ./ios ./example/node_modules/react-native-wkwebview-reborn/"
   },
-  "version": "1.21.0"
+  "version": "1.21.1"
 }
