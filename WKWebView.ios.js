@@ -203,6 +203,7 @@ class WKWebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
     style: ViewPropTypes.style,
+    containerStyle?: ViewPropTypes.style,
     loadingStyle?: ViewPropTypes.style,
     loadingSize?: "small" | "large",
     /**
@@ -364,7 +365,7 @@ class WKWebView extends React.Component {
       />;
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.containerStyle]}>
         {webView}
         {otherView}
       </View>
