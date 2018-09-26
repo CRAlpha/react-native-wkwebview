@@ -203,9 +203,9 @@ class WKWebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
     style: ViewPropTypes.style,
-    containerStyle?: ViewPropTypes.style,
-    loadingStyle?: ViewPropTypes.style,
-    loadingSize?: "small" | "large",
+    containerStyle: ViewPropTypes.style,
+    loadingStyle: ViewPropTypes.style,
+    loadingSize: null | "small" | "large",
     /**
      * If false injectJavaScript will run both main frame and iframe
      * @platform ios
