@@ -47,9 +47,9 @@ type ErrorEvent = {
 
 type Event = Object;
 
-const defaultRenderLoading = () => (
-  <View style={styles.loadingView}>
-    <ActivityIndicator />
+const defaultRenderLoading = (loadingStyle, loadingSize) => (
+  <View style={[styles.loadingView, loadingStyle]}>
+    <ActivityIndicator size={loadingSize || null} />
   </View>
 );
 const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
@@ -203,6 +203,8 @@ class WKWebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
     startInLoadingState: PropTypes.bool,
     style: ViewPropTypes.style,
+    loadingStyle?: ViewPropTypes.style,
+    loadingSize?: "small" | "large",
     /**
      * If false injectJavaScript will run both main frame and iframe
      * @platform ios
@@ -281,7 +283,7 @@ class WKWebView extends React.Component {
     let otherView = null;
 
     if (this.state.viewState === WebViewState.LOADING) {
-      otherView = (this.props.renderLoading || defaultRenderLoading)();
+      otherView = (this.props.renderLoading || defaultRenderLoading)(this.props.loadingStyle, this.props.loadingSize);
     } else if (this.state.viewState === WebViewState.ERROR) {
       const errorEvent = this.state.lastErrorEvent;
       invariant(

@@ -121,6 +121,8 @@ Add JavaScript at document end. Since 1.20.0, the implementation has been change
 - source
 - startInLoadingState
 - style
+- loadingStyle (optional)
+- loadingSize (optional)
 - url (deprecated)
 - bounces
 - onShouldStartLoadWithRequest
