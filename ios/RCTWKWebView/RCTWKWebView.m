@@ -513,15 +513,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #pragma mark - WKNavigationDelegate methods
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
-    if (_sendCookies) {
-        NSHTTPURLResponse *response = (NSHTTPURLResponse *)navigationResponse.response;
-        NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[response allHeaderFields] forURL:response.URL];
-        for (NSHTTPCookie *cookie in cookies) {
-            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
-        }
+  if (_sendCookies) {
+    NSHTTPURLResponse *response = (NSHTTPURLResponse *)navigationResponse.response;
+    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[response allHeaderFields] forURL:response.URL];
+    for (NSHTTPCookie *cookie in cookies) {
+      [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
     }
+  }
 
-    decisionHandler(WKNavigationResponsePolicyAllow);
+  if (_onNavigationResponse) {
+    NSDictionary *headers = ((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields;
+    NSInteger statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary:@{
+                                      @"headers": headers,
+                                      @"status": [NSHTTPURLResponse localizedStringForStatusCode:statusCode],
+                                      @"statusCode": @(statusCode),
+                                      }];
+    _onNavigationResponse(event);
+  }
+
+  decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 #if DEBUG
@@ -678,20 +690,5 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   RCTLogWarn(@"Webview Process Terminated");
 }
 
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
-  if (_onNavigationResponse) {
-    NSDictionary *headers = ((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields;
-    NSInteger statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary:@{
-                                      @"headers": headers,
-                                      @"status": [NSHTTPURLResponse localizedStringForStatusCode:statusCode],
-                                      @"statusCode": @(statusCode),
-                                      }];
-    _onNavigationResponse(event);
-  }
-
-  decisionHandler(WKNavigationResponsePolicyAllow);
-}
 
 @end
