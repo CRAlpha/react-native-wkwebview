@@ -61,6 +61,10 @@ If set to true, links with `target="_blank"` or `window.open` will be opened in 
 
 Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component. You can set cookies using `react-native-cookies` Default is false.
 
+- **useWKCookieStore**
+
+Set `useWKCookieStore` to true to use the webView's `WKHTTPCookieStorage`. All Cookies from `sharedHTTPCookieStorage` will be copied to it.
+
 - **source={{file: '', allowingReadAccessToURL: '' }}**
 
 This allows WKWebView loads a local HTML file. Please note the underlying API is only introduced in iOS 9+. So in iOS 8, it will simple ignores these two properties.
