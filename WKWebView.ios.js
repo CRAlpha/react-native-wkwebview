@@ -263,6 +263,15 @@ class WKWebView extends React.Component {
      * A Boolean value that sets whether diagonal scrolling is allowed.
     */
     directionalLockEnabled: PropTypes.bool,
+    /*
+     * The manner in which the keyboard is dismissed when a drag begins in the
+     * scroll view.
+     */
+    keyboardDismissMode: PropTypes.oneOf([
+      'none', // Default
+      'on-drag',
+      'interactive', // iOS only
+    ]),
   };
 
   state = {
@@ -359,6 +368,7 @@ class WKWebView extends React.Component {
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
         onNavigationResponse={this._onNavigationResponse}
+        keyboardDismissMode={this.props.keyboardDismissMode}
       />;
 
     return (

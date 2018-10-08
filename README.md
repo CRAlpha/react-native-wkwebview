@@ -96,6 +96,10 @@ This property specifies how the safe area insets are used to modify the content 
 
 Enables focusing an input inside a webview and showing the keyboard *programatically*. **New in 1.20.0**
 
+- **keyboardDismissMode**
+
+Sets the manner in which the keyboard is dismissed when a drag begins in the scroll view. Possible values are "none", "on-drag" and "interactive". Default to "none".
+
 - **injectJavaScript, injectJavaScriptForMainFrameOnly**
 
 Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime/wkuserscriptinjectiontimeatdocumentstart?language=objc). **New in 1.20.0**
