@@ -4,7 +4,9 @@
 
 React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost.
 
-**Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).* For React Native >= 0.57, please use version 2.x, For React Native < 0.57, please use version 1.x.
+**Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
+
+For React Native >= 0.57, please use version 2.x; For React Native < 0.57, please use version 1.x.
 
 ### Install
 
