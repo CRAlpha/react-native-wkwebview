@@ -1,6 +1,6 @@
-#import "RCTWKWebViewManager.h"
+#import "CRAWKWebViewManager.h"
 
-#import "RCTWKWebView.h"
+#import "CRAWKWebView.h"
 #import "WKProcessPool+SharedProcessPool.h"
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
