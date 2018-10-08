@@ -129,6 +129,9 @@ Enable horizontal swipe gestures will trigger back-forward navigations. Derived 
 - source
 - startInLoadingState
 - style
+- containerStyle (optional)
+- loadingStyle (optional)
+- loadingSize (optional)
 - url (deprecated)
 - bounces
 - onShouldStartLoadWithRequest
