@@ -24,7 +24,7 @@
 }
 @end
 
-@interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate, UIScrollViewDelegate>
+@interface CRAWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
@@ -40,7 +40,7 @@
 
 @end
 
-@implementation RCTWKWebView
+@implementation CRAWKWebView
 {
   WKWebView *_webView;
   BOOL _injectJavaScriptForMainFrameOnly;
@@ -611,8 +611,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
   if (_onNavigationResponse) {
-    NSDictionary *headers = ((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields;
-    NSInteger statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
+    NSDictionary *headers = @{};
+    NSInteger statusCode = 200;
+    if([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]){
+        headers = ((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields;
+        statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
+    }
+
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary:@{
                                       @"headers": headers,
