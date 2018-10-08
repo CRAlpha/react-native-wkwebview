@@ -6,8 +6,6 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
 
-For React Native >= 0.57, please use version 2.x; for React Native < 0.57, please use version 1.x.
-
 ### Install
 
 1. Install from npm (note the postfix in the package name): `npm install react-native-wkwebview-reborn`
@@ -31,7 +29,7 @@ import WKWebView from 'react-native-wkwebview-reborn';
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
 
-If your React Native < 0.40, please use **0.x.x** versions.
+For React Native >= 0.57, use version 2.x; for React Native < 0.57, use version 1.x. For React Native < 0.40, use version 0.x.
 
 ### Compatibility with UIWebView
 
