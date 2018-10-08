@@ -6,7 +6,7 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 
 **Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
 
-For React Native >= 0.57, please use version 2.x; For React Native < 0.57, please use version 1.x.
+For React Native >= 0.57, please use version 2.x; for React Native < 0.57, please use version 1.x.
 
 ### Install
 
