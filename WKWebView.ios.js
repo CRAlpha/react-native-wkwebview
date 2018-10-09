@@ -297,8 +297,7 @@ class WKWebView extends React.Component {
         errorEvent.description
       );
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error(
-        'RCTWKWebView invalid state encountered: ' + this.state.loading
+      console.error('RCTWKWebView invalid state encountered: ' + this.state.loading
       );
     }
 
