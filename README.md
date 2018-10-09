@@ -29,7 +29,7 @@ import WKWebView from 'react-native-wkwebview-reborn';
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
 
-For React Native >= 0.57, use version 2.x; for React Native < 0.57, use version 1.x; for React Native < 0.40, use version 0.x.
+For React Native >= 0.57, use version 2.x; for React Native < 0.40, use version 0.x.
 
 ### Compatibility with UIWebView
 
