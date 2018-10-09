@@ -619,10 +619,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                       @"status": [NSHTTPURLResponse localizedStringForStatusCode:statusCode],
                                       @"statusCode": @(statusCode),
                                       }];
-    _onNavigationResponse(event);
+    // check status code
+    if(statusCode == 200) {
+      _onNavigationResponse(event);
+      decisionHandler(WKNavigationResponsePolicyAllow);
+    } else {
+      RCTLogError(@"Something wrong, statusCode is %zd!", statusCode);
+      decisionHandler(WKNavigationResponsePolicyCancel);
+    }
+  } else {
+    decisionHandler(WKNavigationResponsePolicyAllow);
   }
-
-  decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 @end
