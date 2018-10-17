@@ -563,16 +563,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 {
   if (_onCookiesSave) {
-    NSHTTPURLResponse* response = navigationResponse.response;
-    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[response allHeaderFields] forURL:[NSURL URLWithString:@""]];
-    NSString * cookiesString = [[cookies valueForKey:@"description"] componentsJoinedByString:@"\n"];
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
-    @"data": cookiesString
-    }];
-    _onCookiesSave(event);
+     if (@available(iOS 11.0, *)) {  //for ios 11+
+      WKHTTPCookieStore *cookieStore = webView.configuration.websiteDataStore.httpCookieStore;
+        [cookieStore getAllCookies:^(NSArray* cookieList) {
+            if (cookieList.count > 0) {
+              NSArray *cookies = cookieList;
+              NSString * cookiesString = [[cookies valueForKey:@"description"] componentsJoinedByString:@"|"];
+              NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+              [event addEntriesFromDictionary: @{
+              @"data": cookiesString
+              }];
+              _onCookiesSave(event);
+            }
+        }];
+      decisionHandler(WKNavigationResponsePolicyAllow);
+    } else {
+      NSHTTPURLResponse* response = navigationResponse.response;
+      NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[response allHeaderFields] forURL:[NSURL URLWithString:@""]];
+      NSString * cookiesString = [[cookies valueForKey:@"description"] componentsJoinedByString:@"\n"];
+      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+        [event addEntriesFromDictionary: @{
+        @"data": cookiesString
+        }];
+        _onCookiesSave(event);
+      decisionHandler(WKNavigationResponsePolicyAllow);
+    }
   }
-  decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 #pragma mark - WKUIDelegate

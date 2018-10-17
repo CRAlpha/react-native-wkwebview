@@ -450,10 +450,15 @@ class WKWebView extends React.Component {
    * Parse returned web cookies to javascript array of objects.
    */
   parseCookie = (cookies) => {
-    const cookieList = cookies.split('%');
+    let cookieList
+    const IOSVersion = parseInt(Platform.Version, 10);
+    if (IOSVersion <=10) {
+      cookieList = cookies.split('%')
+    } else {
+      cookieList = cookies.split('|')
+    }
     const cookieArray = cookieList.map((cookie) => {
       let cookieArr;
-      const IOSVersion = parseInt(Platform.Version, 10);
       if (IOSVersion <= 10) {
         const trimmed = cookie.replace(/"/g, '');
         cookieArr = trimmed.split(' ');
