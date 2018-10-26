@@ -291,9 +291,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
          {
              if ([records containsObject: record.displayName]) {
                  [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:record.dataTypes forDataRecords:@[record]
-                 completionHandler:^{
-                     NSLog(@"%@ Cookies for %@ deleted successfully", records, record.displayName);
-                 }];
+                 completionHandler:^{}];
                }
          }
      }];
