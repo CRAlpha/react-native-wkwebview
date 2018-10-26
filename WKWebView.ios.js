@@ -184,7 +184,7 @@ class WKWebView extends React.Component {
      * must be a string.
      */
     onMessage: PropTypes.func,
-     /**
+    /**
      * A function to fetch all web cookies on page load.
      * Useful for when there is a need to use some of the cookies
      * in react native code.
@@ -193,6 +193,7 @@ class WKWebView extends React.Component {
     /**
      * Receive scroll events from view
      */
+
     onScroll: PropTypes.func,
     /**
      * A callback to get response headers, http status code and http localized status code.
@@ -446,7 +447,7 @@ class WKWebView extends React.Component {
     )
   };
 
-  /**
+   /**
    * Parse returned web cookies to javascript array of objects.
    */
   parseCookie = (cookies) => {
@@ -503,8 +504,8 @@ class WKWebView extends React.Component {
     return WKWebViewManager.evaluateJavaScript(this.getWebViewHandle(), js);
   };
 
-  removeData = (types) => {
-    return WKWebViewManager.removeData(this.getWebViewHandle(), types)
+  removeData = (types, records) => {
+    return WKWebViewManager.removeData(this.getWebViewHandle(), types, records)
   };
 
   /**
@@ -635,8 +636,6 @@ const styles = StyleSheet.create({
   }
 });
 
-export default WKWebView;
-
 const WebsiteDataTypes = {
   DiskCache: 'WKWebsiteDataTypeDiskCache',
   OfflineWebApplicationCache: 'WKWebsiteDataTypeOfflineWebApplicationCache',
@@ -648,3 +647,4 @@ const WebsiteDataTypes = {
   WebSQLDatabases: 'WKWebsiteDataTypeWebSQLDatabases',
 }
 export { WebsiteDataTypes }
+export default WKWebView;
