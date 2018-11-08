@@ -173,6 +173,8 @@ class WKWebView extends React.Component {
      * Report the progress
      */
     onProgress: PropTypes.func,
+    onCanGoBackChange: PropTypes.func,
+    onCanGoForwardChange: PropTypes.func,
     /**
      * A function that is invoked when the webview calls `window.postMessage`.
      * Setting this property will inject a `postMessage` global into your
@@ -362,6 +364,8 @@ class WKWebView extends React.Component {
         onLoadingError={this._onLoadingError}
         messagingEnabled={messagingEnabled}
         onProgress={this._onProgress}
+        onCanGoBackChange={this._onCanGoBackChange}
+        onCanGoForwardChange={this._onCanGoForwardChange}
         onMessage={this._onMessage}
         onScroll={this._onScroll}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
@@ -510,6 +514,16 @@ class WKWebView extends React.Component {
     const onProgress = this.props.onProgress;
     onProgress && onProgress(event.nativeEvent.progress);
   };
+
+  _onCanGoBackChange = (event: Event) => {
+    const onCanGoBackChange = this.props.onCanGoBackChange;
+    onCanGoBackChange && onCanGoBackChange(event.nativeEvent.canGoBack);
+  }
+
+  _onCanGoForwardChange = (event: Event) => {
+    const onCanGoForwardChange = this.props.onCanGoForwardChange;
+    onCanGoForwardChange && onCanGoForwardChange(event.nativeEvent.canGoForward);
+  }
 
   _onMessage = (event: Event) => {
     var { onMessage } = this.props;
