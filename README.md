@@ -29,7 +29,7 @@ import WKWebView from 'react-native-wkwebview-reborn';
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
 
-If your React Native < 0.40, please use **0.x.x** versions.
+For React Native >= 0.57, use version 2.x; for React Native < 0.40, use version 0.x.
 
 ### Compatibility with UIWebView
 
@@ -48,6 +48,10 @@ A callback to get the loading progress of WKWebView. Derived from [`estimatedPro
 ```
 
 `progress` is a double between 0 and 1.
+
+- **onNavigationResponse**
+
+A callback to get response headers, http status code and http localized status code.
 
 - **openNewWindowInWebView**
 
@@ -92,6 +96,10 @@ This property specifies how the safe area insets are used to modify the content 
 
 Enables focusing an input inside a webview and showing the keyboard *programatically*. **New in 1.20.0**
 
+- **keyboardDismissMode**
+
+Sets the manner in which the keyboard is dismissed when a drag begins in the scroll view. Possible values are "none", "on-drag" and "interactive". Default to "none".
+
 - **injectJavaScript, injectJavaScriptForMainFrameOnly**
 
 Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime/wkuserscriptinjectiontimeatdocumentstart?language=objc). **New in 1.20.0**
@@ -99,6 +107,10 @@ Add JavaScript at document start, see [WKUserScriptInjectionTimeAtDocumentStart]
 - **injectedJavaScript, injectedJavaScriptForMainFrameOnly**
 
 Add JavaScript at document end. Since 1.20.0, the implementation has been changed to use WKUserScript.
+
+- **allowsBackForwardNavigationGestures**
+
+Enable horizontal swipe gestures will trigger back-forward navigations. Derived from [`allowsBackForwardNavigationGestures`](https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu) property.
 
 #### Currently supported props are:
 

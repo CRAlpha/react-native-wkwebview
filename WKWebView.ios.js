@@ -18,7 +18,7 @@ import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import invariant from 'fbjs/lib/invariant';
 import keyMirror from 'fbjs/lib/keyMirror';
-const WKWebViewManager = NativeModules.WKWebViewManager;
+const WKWebViewManager = NativeModules.CRAWKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 
@@ -188,6 +188,10 @@ class WKWebView extends React.Component {
      */
     onScroll: PropTypes.func,
     /**
+     * A callback to get response headers, http status code and http localized status code.
+     */
+    onNavigationResponse: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -259,6 +263,15 @@ class WKWebView extends React.Component {
      * A Boolean value that sets whether diagonal scrolling is allowed.
     */
     directionalLockEnabled: PropTypes.bool,
+    /*
+     * The manner in which the keyboard is dismissed when a drag begins in the
+     * scroll view.
+     */
+    keyboardDismissMode: PropTypes.oneOf([
+      'none', // Default
+      'on-drag',
+      'interactive', // iOS only
+    ]),
   };
 
   state = {
@@ -291,7 +304,7 @@ class WKWebView extends React.Component {
       );
     } else if (this.state.viewState !== WebViewState.IDLE) {
       console.error(
-        'RCTWKWebView invalid state encountered: ' + this.state.loading
+        'CRAWKWebView invalid state encountered: ' + this.state.loading
       );
     }
 
@@ -308,31 +321,24 @@ class WKWebView extends React.Component {
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    let source = this.props.source || {};
-    if (typeof source == 'object') {
-      source = {
-        ...source,
+    let source = this.props.source;
+    if (this.props.source && typeof this.props.source === 'object') {
+      source = Object.assign({}, this.props.source, {
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
-      };
-    }
+      });
 
-    if (this.props.html) {
-      source = {
-        ...source,
-        html: this.props.html
-      };
-    } else if (this.props.url) {
-      source = {
-        ...source,
-        uri: this.props.url
-      };
+      if (this.props.html) {
+        source.html = this.props.html;
+      } else if (this.props.url) {
+        source.uri = this.props.url;
+      }
     }
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
     const webView =
-      <RCTWKWebView
+      <CRAWKWebView
         ref={ref => { this.webview = ref; }}
         key="webViewKey"
         style={webViewStyles}
@@ -361,6 +367,8 @@ class WKWebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
+        onNavigationResponse={this._onNavigationResponse}
+        keyboardDismissMode={this.props.keyboardDismissMode}
       />;
 
     return (
@@ -377,7 +385,7 @@ class WKWebView extends React.Component {
   goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.goForward,
+      UIManager.CRAWKWebView.Commands.goForward,
       null
     );
   };
@@ -388,7 +396,7 @@ class WKWebView extends React.Component {
   goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.goBack,
+      UIManager.CRAWKWebView.Commands.goBack,
       null
     );
   };
@@ -414,7 +422,7 @@ class WKWebView extends React.Component {
     this.setState({ viewState: WebViewState.LOADING });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.reload,
+      UIManager.CRAWKWebView.Commands.reload,
       null
     );
   };
@@ -425,7 +433,7 @@ class WKWebView extends React.Component {
   stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.stopLoading,
+      UIManager.CRAWKWebView.Commands.stopLoading,
       null
     )
   };
@@ -443,7 +451,7 @@ class WKWebView extends React.Component {
   postMessage = (data) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.postMessage,
+      UIManager.CRAWKWebView.Commands.postMessage,
       [String(data)]
     );
   };
@@ -512,9 +520,14 @@ class WKWebView extends React.Component {
     const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
   };
+
+  _onNavigationResponse = (event: Event) => {
+    const { onNavigationResponse } = this.props;
+    onNavigationResponse && onNavigationResponse(event)
+  }
 }
 
-const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
+const CRAWKWebView = requireNativeComponent('CRAWKWebView', WKWebView, {
   nativeOnly: {
     onLoadingStart: true,
     onLoadingError: true,

@@ -5,6 +5,6 @@
 
 @end
 
-@interface RCTWKWebViewManager : RCTViewManager
+@interface CRAWKWebViewManager : RCTViewManager
 
 @end

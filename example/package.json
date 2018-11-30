@@ -7,9 +7,10 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"react": "16.2.0",
-		"react-native": "0.53.2",
+		"metro-react-native-babel-preset": "^0.48.0",
 		"prop-types": "15.6.0",
+		"react": "16.5.0",
+		"react-native": "0.57",
 		"react-native-wkwebview-reborn": "file:../"
 	},
 	"devDependencies": {
