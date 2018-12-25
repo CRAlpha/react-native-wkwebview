@@ -621,6 +621,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         }
       }
     }];
+  } else {
+    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields forURL:((NSHTTPURLResponse *)navigationResponse.response).URL];
+    for (int i = 0; i < cookies.count; i++) {
+      NSHTTPCookie *cookie = [cookies objectAtIndex:i];
+      NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
+      [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+    }
   }
 
   if (_onNavigationResponse) {
