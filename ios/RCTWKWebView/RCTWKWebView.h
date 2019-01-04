@@ -2,7 +2,7 @@
 
 #import <React/RCTView.h>
 
-@class RCTWKWebView;
+@class CRAWKWebView;
 
 /**
  * Special scheme used to pass messages to the injectedJavaScript
@@ -12,19 +12,19 @@
  */
 extern NSString *const RCTJSNavigationScheme;
 
-@protocol RCTWKWebViewDelegate <NSObject>
+@protocol CRAWKWebViewDelegate <NSObject>
 
-- (BOOL)webView:(RCTWKWebView *)webView
+- (BOOL)webView:(CRAWKWebView *)webView
 shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
    withCallback:(RCTDirectEventBlock)callback;
 
 @end
 
-@interface RCTWKWebView : RCTView
+@interface CRAWKWebView : RCTView
 
 - (instancetype)initWithProcessPool:(WKProcessPool *)processPool;
 
-@property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
+@property (nonatomic, weak) id<CRAWKWebViewDelegate> delegate;
 
 @property (nonatomic, copy) NSDictionary *source;
 @property (nonatomic, assign) UIEdgeInsets contentInset;

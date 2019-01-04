@@ -24,7 +24,7 @@
 }
 @end
 
-@interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate, UIScrollViewDelegate>
+@interface CRAWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol, WKScriptMessageHandler, WKUIDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
@@ -40,7 +40,7 @@
 
 @end
 
-@implementation RCTWKWebView
+@implementation CRAWKWebView
 {
   WKWebView *_webView;
   BOOL _injectJavaScriptForMainFrameOnly;
