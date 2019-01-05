@@ -34,6 +34,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (nonatomic, copy) RCTDirectEventBlock onNavigationResponse;
+@property (nonatomic, copy) RCTDirectEventBlock onContentProcessDidTerminate;
 @property (assign) BOOL sendCookies;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
@@ -606,6 +607,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
 {
+  if (_onContentProcessDidTerminate) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    _onContentProcessDidTerminate(event);
+  }
   RCTLogWarn(@"Webview Process Terminated");
 }
 

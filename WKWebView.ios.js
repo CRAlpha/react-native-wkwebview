@@ -192,6 +192,10 @@ class WKWebView extends React.Component {
      */
     onNavigationResponse: PropTypes.func,
     /**
+     * Invoked when the webview content process gets terminated.
+     */
+    onContentProcessDidTerminate: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -368,6 +372,7 @@ class WKWebView extends React.Component {
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
         onNavigationResponse={this._onNavigationResponse}
+        onContentProcessDidTerminate={this._onContentProcessDidTerminate}
         keyboardDismissMode={this.props.keyboardDismissMode}
       />;
 
@@ -524,6 +529,11 @@ class WKWebView extends React.Component {
   _onNavigationResponse = (event: Event) => {
     const { onNavigationResponse } = this.props;
     onNavigationResponse && onNavigationResponse(event)
+  }
+
+  _onContentProcessDidTerminate = (event: Event) => {
+    const { onContentProcessDidTerminate } = this.props;
+    onContentProcessDidTerminate && onContentProcessDidTerminate(event)
   }
 }
 
