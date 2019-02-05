@@ -80,6 +80,10 @@ You can also use the `require` syntax (sendCookies and userAgent will be ignored
 
 Set a custom user agent for WKWebView. Note this only works on iOS 9+. Previous version will simply ignore this props.
 
+- **inputAccessoryViewID**
+
+An optional identifier which links a React Native [InputAccessoryView](https://facebook.github.io/react-native/docs/inputaccessoryview) to this webview. The InputAccessoryView is rendered above the keyboard when this webview is focused.
+
 - **hideKeyboardAccessoryView**
 
 This will hide the keyboard accessory view (`<` `>` and `Done`). Default is false.

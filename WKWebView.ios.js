@@ -238,6 +238,13 @@ class WKWebView extends React.Component {
      */
     openNewWindowInWebView: PropTypes.bool,
     /**
+     * An optional identifier which links a custom InputAccessoryView to
+     * this webview. The InputAccessoryView is rendered above the
+     * keyboard when this webview is focused.
+     * @platform ios
+     */
+    inputAccessoryViewID: PropTypes.string,
+    /**
      * Hide the accessory view when the keyboard is open. Default is false to be
      * backward compatible.
      */
@@ -354,6 +361,7 @@ class WKWebView extends React.Component {
         allowsBackForwardNavigationGestures={this.props.allowsBackForwardNavigationGestures}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         openNewWindowInWebView={this.props.openNewWindowInWebView}
+        inputAccessoryViewID={this.props.inputAccessoryViewID}
         hideKeyboardAccessoryView={this.props.hideKeyboardAccessoryView}
         keyboardDisplayRequiresUserAction={this.props.keyboardDisplayRequiresUserAction}
         allowsLinkPreview={this.props.allowsLinkPreview}

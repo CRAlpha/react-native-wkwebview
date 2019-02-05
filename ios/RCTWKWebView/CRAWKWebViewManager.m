@@ -44,6 +44,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   CRAWKWebView *webView = [[CRAWKWebView alloc] initWithProcessPool:[WKProcessPool sharedProcessPool]];
+  webView.bridge = self.bridge;
   webView.delegate = self;
   return webView;
 }
@@ -69,6 +70,7 @@ RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(inputAccessoryViewID, NSString)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardDisplayRequiresUserAction, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
