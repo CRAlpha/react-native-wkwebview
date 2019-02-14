@@ -449,8 +449,13 @@ class WKWebView extends React.Component {
    * ```
    */
   postMessage = (data) => {
+    const webViewHandle = this.getWebViewHandle();
+    if (webViewHandle === null) {
+      console.warn('CRAWKWebView postMessage: skipping message. No node handle for webview.');
+      return;
+    }
     UIManager.dispatchViewManagerCommand(
-      this.getWebViewHandle(),
+      webViewHandle,
       UIManager.CRAWKWebView.Commands.postMessage,
       [String(data)]
     );
