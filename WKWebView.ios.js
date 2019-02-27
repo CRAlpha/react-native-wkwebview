@@ -385,7 +385,13 @@ class WKWebView extends React.Component {
   goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.CRAWKWebView.Commands.goForward,
+      /* Backwards compatibility. See issue: #222 */
+      (
+        UIManager.getViewManagerConfig ? 
+        UIManager.getViewManagerConfig('CRAWKWebView') : 
+        UIManager.CRAWKWebView
+      )
+      .Commands.goForward,
       null
     );
   };
@@ -396,7 +402,13 @@ class WKWebView extends React.Component {
   goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.CRAWKWebView.Commands.goBack,
+      /* Backwards compatibility. See issue: #222 */
+      (
+        UIManager.getViewManagerConfig ? 
+        UIManager.getViewManagerConfig('CRAWKWebView') : 
+        UIManager.CRAWKWebView
+      )
+      .Commands.goBack,
       null
     );
   };
