@@ -199,7 +199,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     if (rootView) {
       UIView *accessoryView = [strongSelf.bridge.uiManager viewForNativeID:nativeID
                                                                withRootTag:rootView.reactTag];
-      if (accessoryView && [accessoryView respondsToSelector:@selector(inputAccessoryView)]) {
+      // For backwards compatibility with React Native 0.55.4, use the content view.
+      if ([accessoryView respondsToSelector:@selector(content)]) {
+        accessoryView = [accessoryView valueForKey:@"content"];
+      }
+      if ([accessoryView respondsToSelector:@selector(inputAccessoryView)]) {
         [strongSelf swizzleWebView];
         strongSelf.inputAccessoryView = [accessoryView valueForKey:@"inputAccessoryView"];
         [strongSelf reloadInputViews];
