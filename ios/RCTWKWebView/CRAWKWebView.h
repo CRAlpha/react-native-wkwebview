@@ -3,6 +3,7 @@
 #import <React/RCTView.h>
 
 @class CRAWKWebView;
+@class RCTBridge;
 
 /**
  * Special scheme used to pass messages to the injectedJavaScript
@@ -24,6 +25,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 
 - (instancetype)initWithProcessPool:(WKProcessPool *)processPool;
 
+@property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, weak) id<CRAWKWebViewDelegate> delegate;
 
 @property (nonatomic, copy) NSDictionary *source;
@@ -36,9 +38,9 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL injectedJavaScriptForMainFrameOnly;
 @property (nonatomic, copy) NSString *injectJavaScript;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, copy) NSString *inputAccessoryViewID;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
 @property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction;
-
 
 - (void)goForward;
 - (void)goBack;
