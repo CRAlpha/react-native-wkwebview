@@ -103,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if ([changedProps containsObject:@"inputAccessoryViewID"] && self.inputAccessoryViewID) {
     [self setCustomInputAccessoryViewWithNativeID:self.inputAccessoryViewID];
   } else if (!self.inputAccessoryViewID) {
-    [self setDefaultInputAccessoryView];
+    self.inputAccessoryView = nil;
   }
 }
 
@@ -206,25 +206,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       if ([accessoryView respondsToSelector:@selector(inputAccessoryView)]) {
         [strongSelf swizzleWebView];
         strongSelf.inputAccessoryView = [accessoryView valueForKey:@"inputAccessoryView"];
-        [strongSelf reloadInputViews];
       }
     }
   }];
 #endif /* !TARGET_OS_TV */
 }
 
-- (void)setDefaultInputAccessoryView
-{
-  self.inputAccessoryView = nil;
-}
-
 -(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
 {
-  if (!hideKeyboardAccessoryView) {
-    return;
-  }
   [self swizzleWebView];
-  self.inputAccessoryView = nil;
+  self.inputAccessoryView.hidden = hideKeyboardAccessoryView;
 }
 
 - (void)swizzleWebView
