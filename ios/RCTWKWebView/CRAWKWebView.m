@@ -290,7 +290,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
          for (WKWebsiteDataRecord *record  in allRecords)
          {
              if ([records containsObject: record.displayName]) {
-                 [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:record.dataTypes forDataRecords:@[record]
+                 [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:types forDataRecords:@[record]
                  completionHandler:^{}];
                }
          }
