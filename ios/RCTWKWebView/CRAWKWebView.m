@@ -592,6 +592,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
 {
   NSString *scheme = navigationAction.request.URL.scheme;
+  
+  if (navigationAction.targetFrame == nil) {
+      WKWebView *popup = [[WKWebView alloc]initWithFrame:self.bounds configuration:configuration];
+      popup.UIDelegate = self;
+      [self addSubview:popup];
+      return popup;
+  }
+  
   if ((navigationAction.targetFrame.isMainFrame || _openNewWindowInWebView) && ([scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"])) {
     [webView loadRequest:navigationAction.request];
   } else {
@@ -602,6 +610,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
   return nil;
+}
+
+-(void) webViewDidClose:(WKWebView *)webView{
+  // Popup window is closed, we remove it
+  [webView removeFromSuperview];
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
