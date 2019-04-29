@@ -4,7 +4,7 @@
 
 React Native comes with [WebView](http://facebook.github.io/react-native/docs/webview.html) component, which uses UIWebView on iOS. This component uses [WKWebView](http://nshipster.com/wkwebkit/) introduced in iOS 8 with all the performance boost.
 
-**Deployment Target >= iOS 8.0 is required** *(which is React Native's current minimum deployment target anyway).*
+**Deployment Target >= iOS 8.0 is required** _(which is React Native's current minimum deployment target anyway)._
 
 ### Install
 
@@ -17,9 +17,8 @@ React Native comes with [WebView](http://facebook.github.io/react-native/docs/we
 2. In the XCode's "Project navigator", right click on your project's Libraries folder ➜ Add Files to <...>
 3. Go to node_modules ➜ react-native-wkwebview-reborn ➜ ios ➜ select `RCTWKWebView.xcodeproj`
 4. Go your build target ➜ Build Phases ➜ Link Binary With Libraries, click "+" and select `libRCTWkWebView.a` (see the following screenshot for reference)
-![Linking](https://user-images.githubusercontent.com/608221/28060167-0650e3f4-6659-11e7-8085-7a8c2615f90f.png)
+   ![Linking](https://user-images.githubusercontent.com/608221/28060167-0650e3f4-6659-11e7-8085-7a8c2615f90f.png)
 5. Compile and profit (Remember to set Minimum Deployment Target = 8.0)
-
 
 ### Usage
 
@@ -29,7 +28,7 @@ import WKWebView from 'react-native-wkwebview-reborn';
 
 Try replacing your existing `WebView` with `WKWebView` and it should work in most cases.
 
-For React Native >= 0.57, use version 2.x; for React Native < 0.40, use version 0.x.
+For React Native >= 0.57, use version 2.x; for React Native < 0.57, use version 1.x; for React Native < 0.40, use version 0.x.
 
 ### Compatibility with UIWebView
 
@@ -44,7 +43,7 @@ WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy U
 A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
 
 ```js
-<WKWebView onProgress={(progress) => console.log(progress)} />
+<WKWebView onProgress={progress => console.log(progress)} />
 ```
 
 `progress` is a double between 0 and 1.
@@ -59,7 +58,7 @@ If set to true, links with `target="_blank"` or `window.open` will be opened in 
 
 - **sendCookies**
 
-Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest.  This emulates the behavior of react-native's `WebView` component. You can set cookies using `react-native-cookies` Default is false.
+Set `sendCookies` to true to copy cookies from `sharedHTTPCookieStorage` when calling loadRequest. This emulates the behavior of react-native's `WebView` component. You can set cookies using `react-native-cookies` Default is false.
 
 - **source={{file: '', allowingReadAccessToURL: '' }}**
 
@@ -67,7 +66,12 @@ This allows WKWebView loads a local HTML file. Please note the underlying API is
 It allows you to provide a fallback URL for iOS 8 users.
 
 ```js
-<WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
+<WKWebView
+  source={{
+    file: RNFS.MainBundlePath + '/data/index.html',
+    allowingReadAccessToURL: RNFS.MainBundlePath,
+  }}
+/>
 ```
 
 You can also use the `require` syntax (sendCookies and userAgent will be ignored)
@@ -94,7 +98,7 @@ This property specifies how the safe area insets are used to modify the content 
 
 - **keyboardDisplayRequiresUserAction**
 
-Enables focusing an input inside a webview and showing the keyboard *programatically*. **New in 1.20.0**
+Enables focusing an input inside a webview and showing the keyboard _programatically_. **New in 1.20.0**
 
 - **keyboardDismissMode**
 
@@ -135,18 +139,17 @@ Enable horizontal swipe gestures will trigger back-forward navigations. Derived 
 - pagingEnabled
 - scrollEnabled
 - directionalLockEnabled
+- scalesPageToFit
 
-####  Unsupported props are:
+#### Unsupported props are:
 
 - mediaPlaybackRequiresUserAction
-- scalesPageToFit
 - domStorageEnabled
 - javaScriptEnabled
 - allowsInlineMediaPlayback
 - decelerationRate
 
 ### Advanced Communication between React Native and WkWebView
-
 
 #### Communication from WKWebview to React Native
 
@@ -155,19 +158,19 @@ Enable horizontal swipe gestures will trigger back-forward navigations. Derived 
 This utilizes the message handlers in WKWebView and allows you to post message from webview to React Native. For example:
 
 ```js
-<WKWebView onMessage={(e) => console.log(e)} />
+<WKWebView onMessage={e => console.log(e)} />
 ```
 
 Then in your webview, you can post message to React Native using
 
 ```js
-window.webkit.messageHandlers.reactNative.postMessage({message: 'hello!'});
+window.webkit.messageHandlers.reactNative.postMessage({ message: 'hello!' });
 ```
 
 or (since 1.14.0)
 
 ```js
-window.postMessage({message: 'hello!'});
+window.postMessage({ message: 'hello!' });
 ```
 
 Then you can access the nativeEvent in React Native using the event object returned
@@ -198,7 +201,7 @@ you can define a callback method on your WebView:
 window.receivedMessageFromReactNative = function(data) {
   // Code here
   console.log(data);
-}
+};
 ```
 
 Then you can send message from React Native with this method call:
