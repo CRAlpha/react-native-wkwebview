@@ -61,6 +61,9 @@
   "name": "react-native-wkwebview-reborn",
   "optionalDependencies": {},
   "peerDependencies": {
+    "react": "*",
+    "react-native": ">= 0.59.0",
+    "react-native-webview": "^5.4.0"
     "prop-types": "^15.6.0"
   },
   "pre-push#master": [
