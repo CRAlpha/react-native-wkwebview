@@ -1,3 +1,7 @@
+## Note
+
+This package is no longer maintained, you should probably consider using [react-native-webview](https://github.com/react-native-webview/react-native-webview) if you start a new project.
+
 ## WKWebView Component for React Native
 
 [![npm version](https://badge.fury.io/js/react-native-wkwebview-reborn.svg)](https://badge.fury.io/js/react-native-wkwebview-reborn)
