@@ -1,4 +1,4 @@
-## Note
+## Inactive Repository Notice!
 
 This package is no longer maintained, you should probably consider using [react-native-webview](https://github.com/react-native-webview/react-native-webview) if you start a new project.
 
