@@ -5,22 +5,28 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
+#import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
 #import <objc/runtime.h>
 
-// runtime trick to remove WKWebView keyboard default toolbar
+// runtime trick to remove or replace WKWebView keyboard default toolbar
 // see: http://stackoverflow.com/questions/19033292/ios-7-uiwebview-keyboard-issue/19042279#19042279
 @interface _SwizzleHelperWK : NSObject @end
 @implementation _SwizzleHelperWK
 -(id)inputAccessoryView
 {
-  return nil;
+  UIView *webView = (UIView *)self;
+  while (webView && ![webView isKindOfClass:[CRAWKWebView class]]) {
+    webView = webView.superview;
+  }
+  return webView.inputAccessoryView;
 }
 @end
 
@@ -37,6 +43,7 @@
 @property (assign) BOOL sendCookies;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
+@property (nonatomic, strong) UIView *inputAccessoryView;
 
 @end
 
@@ -89,6 +96,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [self addSubview:_webView];
   }
   return self;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if ([changedProps containsObject:@"inputAccessoryViewID"] && self.inputAccessoryViewID) {
+    [self setCustomInputAccessoryViewWithNativeID:self.inputAccessoryViewID];
+  } else if (!self.inputAccessoryViewID) {
+    self.inputAccessoryView = nil;
+  }
 }
 
 - (void)setInjectJavaScript:(NSString *)injectJavaScript {
@@ -174,12 +190,36 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
+{
+#if !TARGET_OS_TV
+  __weak CRAWKWebView *weakSelf = self;
+  [self.bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
+    CRAWKWebView *strongSelf = weakSelf;
+    if (rootView) {
+      UIView *accessoryView = [strongSelf.bridge.uiManager viewForNativeID:nativeID
+                                                               withRootTag:rootView.reactTag];
+      // For backwards compatibility with React Native 0.55.4, use the content view.
+      if ([accessoryView respondsToSelector:@selector(content)]) {
+        accessoryView = [accessoryView valueForKey:@"content"];
+      }
+      if ([accessoryView respondsToSelector:@selector(inputAccessoryView)]) {
+        [strongSelf swizzleWebView];
+        strongSelf.inputAccessoryView = [accessoryView valueForKey:@"inputAccessoryView"];
+      }
+    }
+  }];
+#endif /* !TARGET_OS_TV */
+}
+
 -(void)setHideKeyboardAccessoryView:(BOOL)hideKeyboardAccessoryView
 {
-  if (!hideKeyboardAccessoryView) {
-    return;
-  }
-  
+  [self swizzleWebView];
+  self.inputAccessoryView.hidden = hideKeyboardAccessoryView;
+}
+
+- (void)swizzleWebView
+{
   UIView* subview;
   for (UIView* view in _webView.scrollView.subviews) {
     if([[view.class description] hasPrefix:@"WKContent"])
