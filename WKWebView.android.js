@@ -2,6 +2,6 @@
 
 import {
   WebView,
-} from 'react-native';
+} from 'react-native-webview';
 
 export default WebView;
