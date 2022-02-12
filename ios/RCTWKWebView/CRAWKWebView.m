@@ -84,6 +84,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
 #endif
+    [self setViewportToDeviceWidthScript];
     [self setupPostMessageScript];
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:_webView];
@@ -126,6 +127,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self setupPostMessageScript];
 }
 
+- (void)setScalesPageToFit:(BOOL)scalesPageToFit {
+  _scalesPageToFit = scalesPageToFit;
+  [self setViewportToDeviceWidthScript];
+}
+
 - (void)resetupScripts {
   [_webView.configuration.userContentController removeAllUserScripts];
   [self setupPostMessageScript];
@@ -134,6 +140,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
   if (self.atEndScript) {
     [_webView.configuration.userContentController addUserScript:self.atEndScript];
+  }
+}
+
+- (void)setViewportToDeviceWidthScript {
+  if (_scalesPageToFit) {
+    NSString *jScript = @"var meta = document.createElement('meta');"
+    "meta.setAttribute('name', 'viewport');"
+    "meta.setAttribute('content', 'width=device-width');"
+    "document.getElementsByTagName('head')[0].appendChild(meta);";
+    WKUserScript *script =[[WKUserScript alloc] initWithSource:jScript
+                                                 injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                              forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
+    [_webView.configuration.userContentController addUserScript:script];
   }
 }
 
