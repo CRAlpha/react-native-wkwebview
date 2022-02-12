@@ -610,6 +610,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+  
+  if (@available(iOS 11.0, *)) {  //available on iOS 11+
+    WKHTTPCookieStore *cookieStore = webView.configuration.websiteDataStore.httpCookieStore;
+    [cookieStore getAllCookies:^(NSArray* cookies) {
+      if (cookies.count > 0) {
+        for (NSHTTPCookie *cookie in cookies) {
+          NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
+          [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+        }
+      }
+    }];
+  } else {
+    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:((NSHTTPURLResponse *)navigationResponse.response).allHeaderFields forURL:((NSHTTPURLResponse *)navigationResponse.response).URL];
+    for (int i = 0; i < cookies.count; i++) {
+      NSHTTPCookie *cookie = [cookies objectAtIndex:i];
+      NSLog(@"cookie: name=%@, value=%@", cookie.name, cookie.value);
+      [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+    }
+  }
+
   if (_onNavigationResponse) {
     NSDictionary *headers = @{};
     NSInteger statusCode = 200;
@@ -626,7 +646,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                       }];
     _onNavigationResponse(event);
   }
-
+  
   decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
